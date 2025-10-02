@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="page-container fade-in">
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="page-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 21V19C17 17.9 16.1 17 15 17H9C7.9 17 7 17.9 7 19V21M20 8V6C20 5.4 19.6 5 19 5H5C4.4 5 4 5.4 4 6V8M20 8C20.6 8 21 8.4 21 9V15C21 15.6 20.6 16 20 16H4C3.4 16 3 15.6 3 15V9C3 8.4 3.4 8 4 8M20 8H4M12 12C13.1 12 14 11.1 14 10S13.1 8 12 8 10 8.9 10 10 10.9 12 12 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h1><%= title %></h1>
+        </div>
+        <div class="page-actions">
+            <a href="/customers/new" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Adicionar Cliente
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="card slide-in">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="d-flex align-items-center gap-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 7C16 9.2 14.2 11 12 11S8 9.2 8 7 9.8 3 12 3 16 4.8 16 7ZM12 14C16.4 14 20 15.8 20 18V21H4V18C4 15.8 7.6 14 12 14Z" fill="currentColor"/>
+                    </svg>
+                    Lista de Clientes
+                </h3>
+            </div>
+
+            <div class="card-body p-0">
+                <% if (customers.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th style="width: 80px; text-align: center;">ID</th>
+                                <th style="min-width: 180px;">Nome</th>
+                                <th style="min-width: 200px;">Email</th>
+                                <th style="width: 140px;">Telefone</th>
+                                <th style="min-width: 180px;">Endereço</th>
+                                <th style="width: 180px; text-align: center;">Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <% customers.forEach(customer => { %>
+                                <tr>
+                                    <td data-label="ID" style="width: 80px; text-align: center;">
+                                        <span class="badge badge-primary">#<%= customer.id %></span>
+                                    </td>
+                                    <td data-label="Nome" style="min-width: 180px; text-align: left;">
+                                        <strong><%= customer.name %></strong>
+                                    </td>
+                                    <td data-label="Email" style="min-width: 200px; text-align: left;">
+                                        <% if (customer.email) { %>
+                                            <%= customer.email %>
+                                        <% } else { %>
+                                            <span class="text-muted">N/A</span>
+                                        <% } %>
+                                    </td>
+                                    <td data-label="Telefone" style="width: 140px; text-align: left;">
+                                        <% if (customer.phone) { %>
+                                            <%= customer.phone %>
+                                        <% } else { %>
+                                            <span class="text-muted">N/A</span>
+                                        <% } %>
+                                    </td>
+                                    <td data-label="Endereço" style="min-width: 180px; text-align: left;">
+                                        <% if (customer.address) { %>
+                                            <%= customer.address %>
+                                        <% } else { %>
+                                            <span class="text-muted">N/A</span>
+                                        <% } %>
+                                    </td>
+                                    <td data-label="Ações" class="actions" style="width: 180px; text-align: center;">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <a href="/customers/edit/<%= customer.id %>" class="btn btn-primary btn-sm">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M18.5 2.50023C18.8978 2.1024 19.4374 1.87891 20 1.87891C20.5626 1.87891 21.1022 2.1024 21.5 2.50023C21.8978 2.89805 22.1213 3.43762 22.1213 4.00023C22.1213 4.56284 21.8978 5.1024 21.5 5.50023L12 15.0002L8 16.0002L9 12.0002L18.5 2.50023Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                Editar
+                                            </a>
+                                            <form action="/customers/delete/<%= customer.id %>" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');" class="d-inline">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <path d="M19,6V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V6M8,6V4A2,2 0 0,1 10,2H14A2,2 0 0,1 16,4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                    Excluir
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-5">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.3; margin-bottom: 1rem;">
+                            <path d="M16 7C16 9.2 14.2 11 12 11S8 9.2 8 7 9.8 3 12 3 16 4.8 16 7ZM12 14C16.4 14 20 15.8 20 18V21H4V18C4 15.8 7.6 14 12 14Z" fill="currentColor"/>
+                        </svg>
+                        <p class="text-muted mb-3">Nenhum cliente cadastrado ainda.</p>
+                        <a href="/customers/new" class="btn btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem;">
+                                <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Cadastrar Primeiro Cliente
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+
+<script src="/js/script.js"></script>
+</body>
+</html>

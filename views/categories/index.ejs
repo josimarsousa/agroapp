@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="page-container">
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4H9V9H4V4ZM11 4H16V9H11V4ZM4 11H9V16H4V11ZM11 11H16V16H11V11ZM18 4H20V6H18V4ZM18 8H20V10H18V8ZM18 12H20V14H18V12ZM18 16H20V18H18V16ZM18 20H20V22H18V20Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h1><%= title %></h1>
+            </div>
+            <div class="page-actions">
+                <a href="/categories/new" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Adicionar Nova Categoria
+                </a>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <% if (categories.length > 0) { %>
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Descrição</th>
+                                <th>Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <% categories.forEach(category => { %>
+                                <tr>
+                                    <td data-label="ID"><%= category.id %></td>
+                                    <td data-label="Nome"><strong><%= category.name %></strong></td>
+                                    <td data-label="Descrição"><%= category.description || 'N/A' %></td>
+                                    <td data-label="Ações" class="actions">
+                                        <a href="/categories/edit/<%= category.id %>" class="btn btn-primary btn-sm">
+                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M11 4H4A2 2 0 0 0 2 6V18A2 2 0 0 0 4 20H16A2 2 0 0 0 18 18V11" stroke="currentColor" stroke-width="2"/>
+                                                <path d="M18.5 2.5A2.121 2.121 0 0 1 21 4.621L19.379 6.243L17.757 4.621A2.121 2.121 0 0 1 18.5 2.5Z" stroke="currentColor" stroke-width="2"/>
+                                                <path d="M16 5L19 8L8 19L5 19L5 16L16 5Z" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            Editar
+                                        </a>
+                                        <form action="/categories/delete/<%= category.id %>" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?');" class="inline-form">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2"/>
+                                                    <path d="M19 6V20A2 2 0 0 1 17 20H7A2 2 0 0 1 5 20V6M8 6V4A2 2 0 0 1 10 4H14A2 2 0 0 1 16 4V6" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                                Excluir
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 4H9V9H4V4ZM11 4H16V9H11V4ZM4 11H9V16H4V11ZM11 11H16V16H11V11Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Nenhuma categoria cadastrada</h3>
+                    <p>Comece adicionando sua primeira categoria para organizar seus produtos.</p>
+                    <a href="/categories/new" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Adicionar Primeira Categoria
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script src="/js/script.js"></script>
+</body>
+</html>

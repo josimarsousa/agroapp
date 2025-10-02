@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - App Vendas PDV</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="/">Home</a>
+        <% if (isAuthenticated) { %>
+            <a href="/users">Usuários</a>
+            <a href="/customers">Clientes</a>
+            <a href="/products">Produtos</a>
+            <a href="/categories">Categorias</a>
+            <a href="/sales">Vendas</a>
+            <a href="/sales/pdv">PDV</a>
+            <span>Olá, <%= currentUser.username %> (<%= currentUser.role %>)</span>
+            <a href="/auth/logout">Sair</a>
+        <% } else { %>
+            <a href="/auth/login">Login</a>
+            <a href="/auth/register">Registrar</a>
+        <% } %>
+    </nav>
+</header>
+
+<main>
+    <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+        <div class="message success">
+            <%= successMessage %>
+        </div>
+    <% } %>
+    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+        <div class="message error">
+            <%= errorMessage %>
+        </div>
+    <% } %>
+
+    </main>
+
+<footer>
+    <p>&copy; <%= new Date().getFullYear() %> App Vendas PDV. Todos os direitos reservados.</p>
+</footer>
+<script src="/js/main.js"></script>
+<script src="/js/script.js"></script>
+</body>
+</html>

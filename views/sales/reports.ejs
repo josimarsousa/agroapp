@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios de Vendas</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="page-container">
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 3V21H21V3H3ZM9 17H7V10H9V17ZM13 17H11V7H13V17ZM17 17H15V13H17V17Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h1><%= title %></h1>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem;">
+                            <path d="M3 3V21H21V3H3ZM9 17H7V10H9V17ZM13 17H11V7H13V17ZM17 17H15V13H17V17Z" fill="currentColor"/>
+                        </svg>
+                        Gráfico de Vendas por Período
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group mb-4">
+                        <label for="periodSelect" class="form-label">Selecionar Período:</label>
+                        <select id="periodSelect" class="form-control">
+                            <option value="daily" selected>Diário</option>
+                            <option value="monthly">Mensal</option>
+                            <option value="yearly">Anual</option>
+                        </select>
+                    </div>
+                    
+                    <div class="chart-container" style="position: relative; height: 400px; margin-top: 2rem;">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const periodSelect = document.getElementById('periodSelect');
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        let salesChart; // Variável para armazenar a instância do Chart.js
+
+        const fetchDataAndRenderChart = async (period) => {
+            try {
+                const response = await fetch(`/sales/api/sales-data?period=${period}`);
+                if (!response.ok) {
+                    const errorDetails = await response.json().catch(() => ({ message: 'Resposta não é JSON ou vazia.' }));
+                    throw new Error(`HTTP error! status: ${response.status}. Detalhes: ${errorDetails.message || 'N/A'}`);
+                }
+                const data = await response.json();
+
+                if (salesChart) {
+                    salesChart.destroy();
+                }
+
+                salesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Total de Vendas (R$)',
+                            data: data.data,
+                            backgroundColor: 'rgba(40, 167, 69, 0.6)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Total de Vendas (R$)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Período'
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Erro ao buscar ou renderizar dados do gráfico:', error);
+                alert('Não foi possível carregar os dados do gráfico. Tente novamente mais tarde. Detalhes: ' + error.message);
+            }
+        };
+
+        await fetchDataAndRenderChart(periodSelect.value);
+
+        periodSelect.addEventListener('change', async (event) => {
+            await fetchDataAndRenderChart(event.target.value);
+        });
+    });
+</script>
+<script src="/js/script.js"></script>
+</body>
+</html>

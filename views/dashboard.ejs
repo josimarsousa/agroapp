@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - agroApp </title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body class="dashboard-body">
+    <%- include('./partials/header') %>
+    <div class="menu-toggle" id="menu-toggle">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+
+    <div class="dashboard-container">
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div class="page-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 13H11V3H3V13ZM3 21H11V15H3V21ZM13 21H21V11H13V21ZM13 3V9H21V3H13Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h1>Dashboard</h1>
+            </div>
+
+        <div class="page-content">
+            <% if (typeof user !== 'undefined' && user) { %>
+                <div class="card mb-4 fade-in">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="welcome-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 21V19A4 4 0 0 0 16 15H8A4 4 0 0 0 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2>Bem-vindo, <%= user.username %>!</h2>
+                                <p class="mb-0">Gerencie sua produção agrícola de forma inteligente</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cards do Dashboard -->
+                <div class="d-flex gap-4 mb-4" style="flex-wrap: wrap;">
+                    <!-- Card da Última Venda -->
+                    <div class="card slide-in" style="flex: 1; min-width: 300px;">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="header-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z" fill="currentColor"/>
+                                        <path d="M9 8V17H11V8H9ZM13 8V17H15V8H13Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0">Última Venda</h3>
+                                    <p class="mb-0" style="font-size: 0.875rem; color: var(--text-secondary);">Vendas recentes</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <% if (lastSale) { %>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Data:</strong>
+                                        <span><%= new Date(lastSale.sale_date).toLocaleDateString('pt-BR') %></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Valor Total:</strong>
+                                        <span class="badge badge-success">R$ <%= parseFloat(lastSale.total_amount).toFixed(2).replace('.', ',') %></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Cliente:</strong>
+                                        <span><%= lastSale.customer ? lastSale.customer.name : 'Cliente não informado' %></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Vendedor:</strong>
+                                        <span><%= lastSale.user ? lastSale.user.username : 'N/A' %></span>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <div class="alert alert-info">
+                                    <p class="mb-0">Nenhuma venda registrada ainda.</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Card de Estatísticas -->
+                    <div class="card slide-in" style="flex: 1; min-width: 300px;">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="header-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 13H11V3H3V13ZM3 21H11V15H3V21ZM13 21H21V11H13V21ZM13 3V9H21V3H13Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0">Estatísticas</h3>
+                                    <p class="mb-0" style="font-size: 0.875rem; color: var(--text-secondary);">Resumo geral</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between gap-4">
+                                <div class="text-center">
+                                    <div style="font-size: 2rem; font-weight: 700; color: var(--agroapp-accent);"><%= salesToday || 0 %></div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Vendas de hoje</div>
+                                </div>
+                                <div class="text-center">
+                                    <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);"><%= totalProducts || 0 %></div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Produtos vendidos hoje</div>
+                                </div>
+                                <div class="text-center">
+                                    <div style="font-size: 2rem; font-weight: 700; color: var(--agroapp-primary);"><%= totalCustomers || 0 %></div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Clientes Cadastrados no sistema</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            <% } else { %>
+                <div class="card fade-in">
+                    <div class="card-body text-center p-5">
+                        <div class="auth-icon mb-4">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--agroapp-accent);">
+                                <path d="M15 3H19A2 2 0 0 1 21 5V19A2 2 0 0 1 19 21H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polyline points="10,17 15,12 10,7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <line x1="15" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h2 class="mb-3">Bem-vindo ao agroApp!</h2>
+                        <p class="mb-4">Faça login para acessar o sistema de gestão agrícola</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="/auth/login" class="btn btn-primary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 3H19A2 2 0 0 1 21 5V19A2 2 0 0 1 19 21H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <polyline points="10,17 15,12 10,7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <line x1="15" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Fazer Login
+                            </a>
+                            <a href="/auth/register" class="btn btn-outline">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16 21V19A4 4 0 0 0 12 15H5A4 4 0 0 0 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="8.5" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="20" y1="8" x2="20" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <line x1="23" y1="11" x2="17" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Registrar-se
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>

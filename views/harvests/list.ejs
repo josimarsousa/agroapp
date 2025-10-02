@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="page-container">
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M5 17L6.5 20.5L10 19L8.5 15.5L5 17Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M19 17L17.5 20.5L14 19L15.5 15.5L19 17Z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h1><%= title %></h1>
+            </div>
+            <div class="page-actions">
+                <a href="/harvests/new" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Nova Colheita
+                </a>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <!-- Mensagens de Erro e Sucesso -->
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2"/>
+                        <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <%= error %>
+                </div>
+            <% } %>
+            <% if (typeof success !== 'undefined' && success) { %>
+                <div class="alert alert-success mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <%= success %>
+                </div>
+            <% } %>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Filtrar Colheitas por Data</h3>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="/harvests" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="start_date" class="form-label">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                Data Inicial
+                            </label>
+                            <input type="date" id="start_date" name="start_date" class="form-control" value="<%= start_date || '' %>">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="end_date" class="form-label">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                Data Final
+                            </label>
+                            <input type="date" id="end_date" name="end_date" class="form-control" value="<%= end_date || '' %>">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                                    <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                Filtrar
+                            </button>
+                            <% if (isAggregatedView) { %>
+                                <a href="/harvests/export-pdf?start_date=<%= start_date %>&end_date=<%= end_date %>" class="btn btn-secondary">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M14 2H6A2 2 0 0 0 4 4V20A2 2 0 0 0 6 22H18A2 2 0 0 0 20 20V8L14 2Z" stroke="currentColor" stroke-width="2"/>
+                                        <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
+                                        <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/>
+                                        <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                    Exportar PDF
+                                </a>
+                            <% } %>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <% if (start_date && end_date) { %>
+                <div class="alert alert-info mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Exibindo colheitas de <%= new Date(start_date).toLocaleDateString('pt-BR') %> até <%= new Date(end_date).toLocaleDateString('pt-BR') %>
+                </div>
+            <% } %>
+
+            <!-- Tabela de Colheitas -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><%= isAggregatedView ? 'Colheitas Agregadas' : 'Lista de Colheitas' %></h3>
+                </div>
+                <div class="card-body">
+                    <% if (harvests.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Categoria</th>
+                                        <th>Quantidade</th>
+                                        <% if (!isAggregatedView) { %>
+                                            <th>Data da Colheita</th>
+                                            <th>Registrado por</th>
+                                        <% } %>
+                                        <th class="actions">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% harvests.forEach(harvest => { %>
+                                        <tr>
+                                            <td><%= harvest.product ? harvest.product.name : (harvest.Product ? harvest.Product.name : 'N/A') %></td>
+                                            <td><%= harvest.category ? harvest.category.name : (harvest.Category ? harvest.Category.name : 'N/A') %></td>
+                                            <td>
+                                                <% if (isAggregatedView) { %>
+                                                    <%= (harvest.dataValues.totalQuantity ? parseFloat(harvest.dataValues.totalQuantity) : 0).toFixed(2) %>
+                                                <% } else { %>
+                                                    <%= (harvest.quantity ? parseFloat(harvest.quantity) : 0).toFixed(2) %>
+                                                <% } %>
+                                            </td>
+                                            <% if (!isAggregatedView) { %>
+                                                <td><%= new Date(harvest.harvest_date).toLocaleDateString('pt-BR') %></td>
+                                                <td><%= harvest.user ? harvest.user.username : 'N/A' %></td>
+                                            <% } %>
+                                            <td class="actions">
+                                                <% if (!isAggregatedView) { %>
+                                                    <a href="/harvests/edit/<%= harvest.id %>" class="btn btn-sm btn-primary">
+                                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M11 4H4A2 2 0 0 0 2 6V20A2 2 0 0 0 4 22H18A2 2 0 0 0 20 20V13" stroke="currentColor" stroke-width="2"/>
+                                                            <path d="M18.5 2.5A2.121 2.121 0 0 1 21 5L12 14L8 15L9 11L18.5 2.5Z" stroke="currentColor" stroke-width="2"/>
+                                                        </svg>
+                                                        Editar
+                                                    </a>
+                                                    <form method="POST" action="/harvests/delete/<%= harvest.id %>" style="display: inline;">
+                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta colheita?')">
+                                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2"/>
+                                                                <path d="M19 6V20A2 2 0 0 1 17 22H7A2 2 0 0 1 5 20V6M8 6V4A2 2 0 0 1 10 2H14A2 2 0 0 1 16 4V6" stroke="currentColor" stroke-width="2"/>
+                                                            </svg>
+                                                            Excluir
+                                                        </button>
+                                                    </form>
+                                                <% } else { %>
+                                                    <span class="text-muted">(Detalhes em breve)</span>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M5 17L6.5 20.5L10 19L8.5 15.5L5 17Z" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M19 17L17.5 20.5L14 19L15.5 15.5L19 17Z" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <h3>Nenhuma colheita encontrada</h3>
+                            <p>Não há colheitas registradas para o período selecionado.</p>
+                            <a href="/harvests/new" class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                Registrar Nova Colheita
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <% if (!isAggregatedView && harvests.length > 0) { %>
+                <div class="card mt-4">
+                    <div class="card-body text-center">
+                        <a href="/harvests" class="btn btn-secondary">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 12H5" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            Ver Todas as Colheitas (Individual)
+                        </a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script src="/js/script.js"></script>
+</body>
+</html>

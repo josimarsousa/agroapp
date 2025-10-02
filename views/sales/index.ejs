@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="page-container fade-in">
+    <div class="page-header">
+        <div class="page-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 16.1 19 15 19H9C7.9 19 7 18.1 7 17V13M9 21C9.6 21 10 21.4 10 22S9.6 23 9 23 8 22.6 8 22 8.4 21 9 21ZM20 21C20.6 21 21 21.4 21 22S20.6 23 20 23 19 22.6 19 22 19.4 21 20 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h1><%= title %></h1>
+    </div>
+
+    <div class="page-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="page-actions">
+                <a href="/sales/pdv" class="btn btn-success">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Abrir PDV
+                </a>
+            </div>
+            <div class="page-info">
+                <span class="badge badge-info">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 11H15M9 15H15M17 21H7A2 2 0 0 1 5 19V5A2 2 0 0 1 7 3H12.586A1 1 0 0 1 13.293 3.293L18.707 8.707A1 1 0 0 1 19 9.414V19A2 2 0 0 1 17 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <%= sales.length %> vendas registradas
+                </span>
+            </div>
+        </div>
+
+        <% if (sales.length > 0) { %>
+            <div class="card slide-in">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem;">
+                            <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 16.1 19 15 19H9C7.9 19 7 18.1 7 17V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Histórico de Vendas
+                    </h3>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Data da Venda</th>
+                                <th>Realizado por</th>
+                                <th>Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <% sales.forEach(sale => { %>
+                                <tr>
+                                    <td data-label="ID">
+                                        <span class="badge badge-outline">#<%= sale.id %></span>
+                                    </td>
+                                    <td data-label="Cliente">
+                                        <div class="d-flex align-items-center">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem; opacity: 0.7;">
+                                                <path d="M20 21V19A4 4 0 0 0 16 15H8A4 4 0 0 0 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            <%= sale.customer ? sale.customer.name : 'Cliente Avulso' %>
+                                        </div>
+                                    </td>
+                                    <td data-label="Total">
+                                        <span class="text-success fw-bold">R$ <%= parseFloat(sale.total_amount).toFixed(2).replace('.', ',') %></span>
+                                    </td>
+                                    <td data-label="Data da Venda">
+                                        <div class="d-flex align-items-center">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem; opacity: 0.7;">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                                                <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+                                                <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+                                                <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            <%= new Date(sale.sale_date).toLocaleString('pt-BR') %>
+                                        </div>
+                                    </td>
+                                    <td data-label="Realizado por">
+                                        <div class="d-flex align-items-center">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem; opacity: 0.7;">
+                                                <path d="M16 21V19A4 4 0 0 0 12 15H5A4 4 0 0 0 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <circle cx="8.5" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                                                <polyline points="17,11 19,13 23,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                            <%= sale.user ? sale.user.username : 'N/A' %>
+                                        </div>
+                                    </td>
+                                    <td data-label="Ações" class="actions">
+                                        <a href="/sales/<%= sale.id %>" class="btn btn-primary btn-sm">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2"/>
+                                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            Detalhes
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="card slide-in text-center">
+                <div class="card-body py-5">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.3; margin-bottom: 1rem;">
+                        <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 16.1 19 15 19H9C7.9 19 7 18.1 7 17V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h4 class="mb-3">Nenhuma venda registrada</h4>
+                    <p class="text-muted mb-4">Comece realizando sua primeira venda através do PDV.</p>
+                    <a href="/sales/pdv" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Abrir PDV
+                    </a>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script src="/js/script.js"></script>
+</body>
+</html>

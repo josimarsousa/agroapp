@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - agroApp</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+    <link rel="stylesheet" href="/css/history.css">
+</head>
+<body class="dashboard-body">
+    <%- include('../partials/header') %>
+    <div class="menu-toggle" id="menu-toggle">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+
+    <div class="dashboard-container">
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div class="page-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 8V4L8 8L12 12L16 8L12 4" fill="currentColor"/>
+                        <path d="M6 14L10 18L14 14" fill="currentColor"/>
+                        <path d="M6 20H18" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h1>Histórico de Atividades</h1>
+            </div>
+
+            <div class="page-content">
+
+                <!-- Filtros -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22 3H2L10 12.46V19L14 21V12.46L22 3Z" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <h3>Filtros</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="/history" class="filter-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="type">Tipo de Atividade</label>
+                                    <select class="form-control" id="type" name="type">
+                                        <option value="">Todos</option>
+                                        <option value="sale" <%= type === 'sale' ? 'selected' : '' %>>Vendas</option>
+                                        <option value="harvest" <%= type === 'harvest' ? 'selected' : '' %>>Colheitas</option>
+                                        <option value="loss" <%= type === 'loss' ? 'selected' : '' %>>Perdas</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="startDate">Data Inicial</label>
+                                    <input type="date" class="form-control" id="startDate" name="startDate" value="<%= startDate || '' %>">
+                                </div>
+                                <div class="form-group">
+                                    <label for="endDate">Data Final</label>
+                                    <input type="date" class="form-control" id="endDate" name="endDate" value="<%= endDate || '' %>">
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                        Filtrar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Lista de Atividades -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 11H15M9 15H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L19.7071 9.70711C19.8946 9.89464 20 10.149 20 10.4142V19C20 20.1046 19.1046 21 18 21H17Z" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <h3>Atividades Recentes</h3>
+                    </div>
+                    <div class="card-body">
+                        <% if (activities && activities.length > 0) { %>
+                            <div class="activity-list">
+                                <% activities.forEach(activity => { %>
+                                    <div class="activity-item <%= activity.type %>">
+                                        <div class="activity-icon">
+                                            <% if (activity.type === 'sale') { %>
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="currentColor"/>
+                                                </svg>
+                                            <% } else if (activity.type === 'harvest') { %>
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1L13.5 2.5L16.17 5.17L10.5 10.84L11.91 12.25L15.83 8.33L17.5 10H19L21 9ZM1 9L3 7L9 13L7 15L1 9Z" fill="currentColor"/>
+                                                </svg>
+                                            <% } else { %>
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                            <% } %>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-header">
+                                                <h4><%= activity.description %></h4>
+                                                <span class="activity-date"><%= new Date(activity.date).toLocaleDateString('pt-BR') %></span>
+                                            </div>
+                                            <div class="activity-details">
+                                                <% if (activity.value) { %>
+                                                    <span class="activity-value">R$ <%= parseFloat(activity.value).toFixed(2) %></span>
+                                                <% } %>
+                                                <% if (activity.unit) { %>
+                                                    <span class="activity-unit"><%= activity.unit %></span>
+                                                <% } %>
+                                                <% if (activity.reason) { %>
+                                                    <span class="activity-reason">Motivo: <%= activity.reason %></span>
+                                                <% } %>
+                                                <% if (activity.user) { %>
+                                                    <span class="activity-user">Por: <%= activity.user %></span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 11H15M9 15H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L19.7071 9.70711C19.8946 9.89464 20 10.149 20 10.4142V19C20 20.1046 19.1046 21 18 21H17Z" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                </div>
+                                <h3>Nenhuma atividade encontrada</h3>
+                                <p>Não há atividades registradas para os filtros selecionados.</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Paginação -->
+                <% if (totalPages > 1) { %>
+                    <div class="pagination-container">
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a href="?page=<%= currentPage - 1 %>&type=<%= type || '' %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>" class="pagination-btn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                    Anterior
+                                </a>
+                            <% } %>
+                            
+                            <div class="pagination-info">
+                                Página <%= currentPage %> de <%= totalPages %>
+                            </div>
+                            
+                            <% if (currentPage < totalPages) { %>
+                                <a href="?page=<%= currentPage + 1 %>&type=<%= type || '' %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>" class="pagination-btn">
+                                    Próxima
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/menu.js"></script>
+</body>
+</html>

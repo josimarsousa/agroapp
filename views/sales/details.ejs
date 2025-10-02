@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="page-container fade-in">
+    <div class="page-header">
+        <div class="page-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h1><%= title %></h1>
+    </div>
+
+    <div class="page-content">
+        <div class="card slide-in">
+            <div class="card-header">
+                <h3 class="d-flex align-items-center gap-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Informações da Venda
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>ID da Venda:</strong>
+                        <span><%= sale.id %></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Data da Venda:</strong>
+                        <span><%= new Date(sale.sale_date).toLocaleString('pt-BR') %></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Total da Venda:</strong>
+                        <span class="price">R$ <%= parseFloat(sale.total_amount).toFixed(2).replace('.', ',') %></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Realizado por:</strong>
+                        <span><%= sale.user ? sale.user.username : 'N/A' %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card slide-in">
+            <div class="card-header">
+                <h3 class="d-flex align-items-center gap-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 7C16 9.2 14.2 11 12 11S8 9.2 8 7 9.8 3 12 3 16 4.8 16 7ZM12 14C16.4 14 20 15.8 20 18V21H4V18C4 15.8 7.6 14 12 14Z" fill="currentColor"/>
+                    </svg>
+                    Informações do Cliente
+                </h3>
+            </div>
+            <div class="card-body">
+                <% if (sale.customer) { %>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Nome:</strong>
+                            <span><%= sale.customer.name %></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Email:</strong>
+                            <span><%= sale.customer.email || 'N/A' %></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Telefone:</strong>
+                            <span><%= sale.customer.phone || 'N/A' %></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Endereço:</strong>
+                            <span><%= sale.customer.address || 'N/A' %></span>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 7C16 9.2 14.2 11 12 11S8 9.2 8 7 9.8 3 12 3 16 4.8 16 7ZM12 14C16.4 14 20 15.8 20 18V21H4V18C4 15.8 7.6 14 12 14Z" fill="currentColor"/>
+                        </svg>
+                        <p>Cliente não associado a esta venda (Venda Avulsa).</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="card slide-in">
+            <div class="card-header">
+                <h3 class="d-flex align-items-center gap-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 17.9 19 19 19S21 18.1 21 17V13M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Itens da Venda
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                <% if (sale.items && sale.items.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Descrição</th>
+                                <th>Preço Unitário</th>
+                                <th>Quantidade</th>
+                                <th>Subtotal</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <% sale.items.forEach(item => { %>
+                                <tr>
+                                    <td data-label="Produto"><%= item.product ? item.product.name : 'Produto Removido' %></td>
+                                    <td data-label="Descrição"><%= item.product ? item.product.description : 'N/A' %></td>
+                                    <td data-label="Preço Unit.">R$ <%= parseFloat(item.unit_price).toFixed(2).replace('.', ',') %></td>
+                                    <td data-label="Quantidade"><%= item.quantity %></td>
+                                    <td data-label="Subtotal">R$ <%= parseFloat(item.subtotal).toFixed(2).replace('.', ',') %></td>
+                                </tr>
+                            <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 17.9 19 19 19S21 18.1 21 17V13M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <p>Nenhum item encontrado para esta venda.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="card slide-in">
+            <div class="card-footer">
+                <div class="d-flex gap-2 justify-content-center">
+                    <a href="/sales" class="btn btn-secondary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem;">
+                            <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Voltar para Histórico de Vendas
+                    </a>
+                    <button id="printPdfBtn" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem;">
+                            <path d="M6 9V2H18V9M6 18H4C3.4 18 3 17.6 3 17V11C3 10.4 3.4 10 4 10H20C20.6 10 21 10.4 21 11V17C21 17.6 20.6 18 20 18H18M6 14H18V22H6V14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Exportar PDF / Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('printPdfBtn').addEventListener('click', () => {
+        const saleId = '<%= sale.id %>';
+        const pdfUrl = `/sales/${saleId}/pdf`;
+
+        // Abre o PDF em uma nova aba
+        const newWindow = window.open(pdfUrl, '_blank');
+        if (newWindow) {
+            // Tenta imprimir automaticamente após o carregamento (pode ser bloqueado por navegadores)
+            newWindow.onload = () => {
+                // newWindow.print(); // Descomente para tentar imprimir automaticamente
+            };
+        } else {
+            alert('Pop-ups bloqueados. Por favor, permita pop-ups para abrir o PDF.');
+        }
+    });
+</script>
+<script src="/js/script.js"></script>
+</body>
+</html>
+
+        // Abre o PDF em uma nova aba
+        const newWindow = window.open(pdfUrl, '_blank');
+        if (newWindow) {
+            // Tenta imprimir automaticamente após o carregamento (pode ser bloqueado por navegadores)
+            newWindow.onload = () => {
+                // newWindow.print(); // Descomente para tentar imprimir automaticamente
+            };
+        } else {
+            alert('Pop-ups bloqueados. Por favor, permita pop-ups para abrir o PDF.');
+        }
+    });
+</script>
+<script src="/js/script.js"></script>
+</body>
+</html>

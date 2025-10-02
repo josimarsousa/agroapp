@@ -1,0 +1,3315 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Garante que padding e borda não aumentem o tamanho final */
+}
+
+/* Footer específico para dashboard */
+.dashboard-body footer {
+    text-align: center;
+    color: white;
+    background: transparent;
+    padding: 1rem;
+    margin-top: auto;
+}
+
+.dashboard-body footer p {
+    color: white !important;
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 80vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Modern Navbar Styles */
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+header h1 {
+    margin: 0;
+    margin-bottom: 15px;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+header nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+header nav a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+header nav a:hover::before {
+    left: 100%;
+}
+
+header nav a:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+header nav span {
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 25px;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    width: calc(100% - 2rem);
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+/* Modern Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+/* Modern Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+    min-height: 44px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #38a169, #2f855a);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+}
+
+.btn_danger {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
+    min-height: 44px;
+}
+
+.btn_danger:hover {
+    background: linear-gradient(135deg, #ff5252, #d32f2f);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(238, 90, 82, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #718096, #4a5568);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(113, 128, 150, 0.3);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #4a5568, #2d3748);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(113, 128, 150, 0.4);
+}
+
+/* Modern Messages */
+.error-message {
+    color: #e53e3e;
+    background: linear-gradient(135deg, rgba(254, 178, 178, 0.9), rgba(252, 165, 165, 0.9));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
+    font-weight: 500;
+}
+
+.success-message {
+    color: #38a169;
+    background: linear-gradient(135deg, rgba(154, 230, 180, 0.9), rgba(134, 239, 172, 0.9));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(72, 187, 120, 0.2);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.1);
+    font-weight: 500;
+}
+
+/* Modern Tables */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 0.95rem;
+}
+
+table th {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+table th:first-child {
+    border-top-left-radius: 16px;
+}
+
+table th:last-child {
+    border-top-right-radius: 16px;
+}
+
+table tbody tr {
+    transition: all 0.3s ease;
+}
+
+table tbody tr:nth-child(even) {
+    background: rgba(102, 126, 234, 0.02);
+}
+
+table tbody tr:hover {
+    background: rgba(102, 126, 234, 0.08);
+    transform: scale(1.01);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 16px;
+}
+
+table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 16px;
+}
+
+.actions .btn {
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    min-height: 36px;
+}
+
+/* Table Responsive Wrapper */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+/* Fix para alinhamento de colunas */
+table th,
+table td {
+    white-space: nowrap;
+    vertical-align: middle;
+    text-align: left;
+}
+
+table th:first-child,
+table td:first-child {
+    text-align: center;
+    width: 80px;
+}
+
+table th:last-child,
+table td:last-child {
+    text-align: center;
+    width: 120px;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 4px;
+}
+
+/* Mobile Optimized Body */
+.mobile-optimized {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.mobile-optimized input,
+.mobile-optimized textarea,
+.mobile-optimized select {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+/* Modern Footer */
+footer {
+    
+    backdrop-filter: blur(20px);
+    color: #e8ebee;
+    text-align: center;
+    padding: 1.5rem 0;
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.945);
+    box-shadow: 0 -10px 30px rgba(251, 249, 249, 0.889);
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 10px;
+    width: 700px;
+   
+}
+
+/* Footer específico para tela de login */
+.login-body footer {
+    background: rgba(249, 247, 247, 0.776);
+    backdrop-filter: blur(20px);
+    color: rgba(255, 255, 255, 0.8);
+    border-top: 1px solid rgb(255, 255, 255);
+    box-shadow: 0 -10px 30px rgba(250, 249, 249, 0.955);
+}
+
+/* Footer específico para auth-body (login/register) */
+.auth-body footer {
+    text-align: center;
+    color: white !important;
+    background: transparent;
+    padding: 1rem;
+    margin-top: auto;
+}
+
+.auth-body footer p {
+    color: white !important;
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.auth-body footer strong {
+    color: white !important;
+}
+
+/* Modern PDV Styles */
+.pdv-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    
+}
+
+.left-panel, .right-panel {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.product-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.product-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.product-item .details {
+    flex-grow: 1;
+    margin-right: 1rem;
+}
+
+.product-item .details h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.product-item .details p {
+    margin: 0;
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.product-item .controls {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.product-item .controls input {
+    width: 70px;
+    text-align: center;
+    padding: 0.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+#productSearch{
+    height: 20px;
+}
+
+#cart-items {
+    margin-top: 20px;
+}
+
+#cart-items table {
+    width: 100%;
+}
+
+#cart-items th, #cart-items td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+#cart-items tfoot td {
+    font-weight: bold;
+    border-top: 2px solid #333;
+}
+
+.search-results {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-top: none;
+    background-color: #fff;
+    position: absolute; /* Para que a lista fique sobre outros elementos */
+    width: 100%; /* Ajuste para ocupar toda a largura do container */
+    z-index: 9999; /* Z-index muito alto para ficar sobre o formulário */
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.2); /* Sombra mais forte para destaque */
+    top: 100%; /* Posiciona logo abaixo do input */
+    left: 0;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Custom scrollbar for search results */
+.search-results::-webkit-scrollbar {
+    width: 10px;
+}
+
+.search-results::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 5px;
+    margin: 2px;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 5px;
+    border: 1px solid #f8f9fa;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+    background: #495057;
+}
+
+.search-results::-webkit-scrollbar-thumb:active {
+    background: #343a40;
+}
+
+/* Firefox scrollbar and ensure scrollbar is always visible */
+.search-results {
+    scrollbar-width: thin;
+    scrollbar-color: #6c757d #f8f9fa;
+    overflow-y: scroll;
+}
+
+.search-results div {
+    padding: 10px 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    font-weight: 500;
+    line-height: 1.6;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.search-results div:last-child {
+    border-bottom: none; /* Remove a borda do último item */
+}
+
+.search-results div:hover {
+    background-color: #f0f0f0;
+}
+
+.sale-details-card {
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fdfdfd;
+    margin-top: 20px;
+    overflow: hidden; /* Garante que o conteúdo não saia do card */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sale-details-card .pdv-container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.sale-details-card .left-panel,
+.sale-details-card .right-panel {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* ================================================== */
+/* MODERN RESPONSIVE DESIGN */
+/* ================================================== */
+
+/* Tablet and Mobile Styles */
+/* Desktop and large screen optimizations */
+@media (min-width: 769px) {
+    /* Ensure menu toggle is hidden on desktop */
+    .menu-toggle.modern {
+        display: none !important;
+    }
+    
+    /* Ensure navigation is visible and properly styled on desktop */
+    header nav {
+        display: flex !important;
+        position: static !important;
+        width: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+        overflow: visible !important;
+        z-index: auto !important;
+        left: auto !important;
+        top: auto !important;
+    }
+    
+    /* Reset sidebar styles for desktop */
+    header nav::before {
+        display: none !important;
+    }
+    
+    /* Ensure proper header layout on desktop */
+    header {
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 2rem 1rem !important;
+        text-align: center;
+    }
+    
+    header h1 {
+        font-size: 2.5rem !important;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Dashboard grid optimization for large screens */
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)) !important;
+        gap: 2.5rem !important;
+        max-width: 1400px;
+        margin: 2rem auto !important;
+    }
+    
+    /* Page header optimization for desktop */
+    .page-header {
+        padding: 2rem 2.5rem !important;
+        margin-bottom: 2rem !important;
+        max-width: 1400px;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    .page-icon {
+        width: 60px !important;
+        height: 60px !important;
+        border-radius: 16px !important;
+    }
+    
+    .page-icon svg {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background-attachment: fixed;
+    }
+
+    .container {
+        padding: 1rem;
+        font-size: 14px;
+    }
+
+    /* Improved table responsiveness for mobile */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        /* Ensure table takes full width and shows all content */
+        width: 100%;
+        max-width: 100%;
+    }
+
+    table {
+        min-width: 600px;
+        font-size: 0.85rem;
+        margin: 0;
+        /* Ensure table content is fully visible */
+        width: 100%;
+        table-layout: auto;
+    }
+
+    table th, table td {
+        padding: 0.6rem 0.4rem;
+        white-space: nowrap;
+        font-size: 0.9rem;
+        /* Ensure content doesn't get cut off */
+        min-width: fit-content;
+    }
+
+    /* Optimize action buttons in tables - CRITICAL FOR MOBILE */
+    .actions {
+        min-width: 120px;
+        /* Ensure actions column is always visible */
+        position: sticky;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-left: 1px solid rgba(0, 0, 0, 0.1);
+        z-index: 10;
+    }
+
+    .actions .btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+        margin-right: 0.25rem;
+        min-width: 60px;
+        /* Ensure buttons are easily tappable */
+        min-height: 36px;
+        border-radius: 8px;
+        font-weight: 600;
+        /* Better contrast for mobile */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: all 0.2s ease;
+    }
+
+    .actions .btn:hover,
+    .actions .btn:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+        min-width: 50px;
+        min-height: 32px;
+    }
+
+    /* Ensure action column header is also sticky */
+    table th.actions,
+    table thead th:last-child {
+        position: sticky;
+        right: 0;
+        background: rgba(102, 126, 234, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 11;
+    }
+
+    /* PDV Mobile Layout */
+    .pdv-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-top: 0.5rem;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .left-panel, .right-panel {
+        padding: 1.5rem;
+        margin-bottom: 0;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* Garantir que o sale-details-card contenha o pdv-container */
+    .sale-details-card .pdv-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .product-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .product-item .details {
+        margin-right: 0;
+        text-align: center;
+    }
+
+    .product-item .controls {
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .product-item .controls input {
+        width: 80px;
+        padding: 0.75rem;
+    }
+
+    /* Form improvements for mobile */
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 1rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        width: 100%;
+        box-sizing: border-box;
+        border: 2px solid #e2e8f0;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+
+    /* Product info container mobile */
+    .product-info-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        min-height: 200px;
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .product-info-container.visible {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .product-info-container h4 {
+        margin-bottom: 1rem;
+        color: #2d3748;
+        font-size: 1.1rem;
+    }
+
+    .product-info-container p {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    /* Quantity input specific styling */
+    .quantity-input {
+        max-width: 120px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    /* Search results mobile optimization */
+    .search-results {
+        width: 100%;
+        border-radius: 12px;
+        max-height: 350px;
+        margin-top: 0.5rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        overflow-y: scroll;
+        z-index: 9999;
+        position: absolute;
+        background-color: #fff;
+    }
+
+    .search-results div {
+        padding: 1.2rem 1rem;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f0f0f0;
+        color: #333;
+        font-weight: 500;
+        line-height: 1.6;
+        min-height: 55px;
+        display: flex;
+        align-items: center;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    .search-results div:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Cart table mobile optimization */
+    #cart-items table {
+        font-size: 0.9rem;
+        width: 70%;
+        border-collapse: collapse;
+    }
+
+    #cart-items th,
+    #cart-items td {
+        padding: 0.75rem 0.5rem;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    #cart-items th {
+        background: rgba(102, 126, 234, 0.1);
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    #cart-items tfoot td {
+        font-weight: bold;
+        border-top: 2px solid #667eea;
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    /* Sale details card mobile optimization */
+    .sale-details-card {
+        margin: 1rem 0;
+        padding: 1.5rem;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .sale-details-card h3 {
+        color: #2d3748;
+        margin-bottom: 1.25rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .sale-details-card p {
+        margin-bottom: 0.75rem;
+        line-height: 1.6;
+    }
+
+    /* Action buttons mobile optimization */
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        min-height: 48px;
+    }
+
+    /* Button improvements for mobile */
+    .btn {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        min-height: 48px;
+        width: 100%;
+        margin-bottom: 0.75rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+    }
+
+    /* Search results mobile */
+    .search-results {
+        width: calc(100% - 2rem);
+        border-radius: 12px;
+        max-height: 350px;
+        overflow-y: scroll;
+        z-index: 9999;
+        position: absolute;
+        background-color: #fff;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-results div {
+        padding: 1.2rem 1rem;
+        font-size: 0.95rem;
+        color: #333;
+        font-weight: 500;
+        line-height: 1.6;
+        min-height: 55px;
+        display: flex;
+        align-items: center;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+}
+
+/* Mobile Phones - Standard (up to 480px) */
+@media (max-width: 480px) {
+    main {
+        padding: 1rem;
+        margin: 0.5rem auto;
+        width: calc(100% - 0.5rem);
+    }
+
+    h1, h2, h3 {
+        font-size: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Further optimize tables for small screens */
+    table {
+        font-size: 0.8rem;
+        min-width: 500px;
+    }
+
+    table th, table td {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.85rem;
+    }
+
+    /* Enhanced action buttons for small screens */
+    .actions {
+        min-width: 100px;
+        /* Keep sticky positioning for very small screens */
+        position: sticky;
+        right: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(15px);
+        border-left: 2px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .actions .btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+        margin-right: 0.2rem;
+        min-width: 50px;
+        min-height: 32px;
+        /* Better visibility on small screens */
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-sm {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.7rem;
+        min-width: 45px;
+        min-height: 28px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+    }
+
+    .btn {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.95rem;
+        min-height: 44px;
+    }
+
+    .product-item .controls input {
+        width: 70px;
+        padding: 0.5rem;
+    }
+
+    .left-panel, .right-panel {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    /* Improved touch targets for modern menu toggle */
+    .menu-toggle.modern {
+        min-width: 52px;
+        min-height: 48px;
+    }
+
+    /* Better spacing for small screens */
+    .pdv-container {
+        gap: 1rem;
+        margin-top: 0.25rem;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Garantir que o sale-details-card contenha o pdv-container em telas pequenas */
+    .sale-details-card .pdv-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .sale-details-card .left-panel,
+    .sale-details-card .right-panel {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .product-item {
+        padding: 0.875rem;
+    }
+
+    /* Form optimizations for small screens */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        font-size: 0.95rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+        border-radius: 10px;
+    }
+
+    /* Product info container for small screens */
+    .product-info-container {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 0.75rem;
+        min-height: 180px;
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .product-info-container.visible {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .product-info-container h4 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .product-info-container p {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+
+    /* Search results for small screens */
+    .search-results {
+        max-height: 300px;
+        border-radius: 10px;
+        overflow-y: scroll;
+        z-index: 9999;
+        position: absolute;
+        background-color: #fff;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        width: 100%;
+    }
+
+    .search-results div {
+        padding: 1rem 0.875rem;
+        font-size: 0.9rem;
+        color: #333;
+        font-weight: 500;
+        line-height: 1.6;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    /* Cart table for small screens */
+    #cart-items table {
+        font-size: 0.85rem;
+    }
+
+    #cart-items th,
+    #cart-items td {
+        padding: 0.6rem 0.4rem;
+    }
+
+    /* Quantity input for small screens */
+    .quantity-input {
+        max-width: 100px;
+        font-size: 0.9rem;
+    }
+
+    /* Sale details card for small screens */
+    .sale-details-card {
+        margin: 0.75rem 0;
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .sale-details-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .sale-details-card p {
+        margin-bottom: 0.6rem;
+        font-size: 0.95rem;
+    }
+
+    /* Action buttons for small screens */
+    .action-buttons {
+        gap: 0.6rem;
+        margin-top: 1.25rem;
+    }
+
+    .action-buttons .btn {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+        min-height: 44px;
+        border-radius: 10px;
+    }
+}
+
+/* iPhone 6.7" and similar large phones (414px width) */
+@media (max-width: 414px) {
+    .container {
+        padding: 0.8rem;
+        font-size: 14px;
+    }
+
+    main {
+        padding: 0.8rem;
+        margin: 0.4rem auto;
+        width: calc(100% - 0.5rem);
+    }
+
+    /* Optimize tables for 6.7" screens */
+    table {
+        font-size: 0.75rem;
+        min-width: 480px;
+    }
+
+    table th, table td {
+        padding: 0.4rem 0.25rem;
+    }
+
+    /* Compact but visible action buttons for 6.7" screens */
+    .actions {
+        min-width: 90px;
+        /* Maintain sticky positioning */
+        position: sticky;
+        right: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(15px);
+        border-left: 2px solid rgba(102, 126, 234, 0.4);
+    }
+
+    .actions .btn {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.7rem;
+        margin-right: 0.15rem;
+        min-width: 45px;
+        min-height: 30px;
+        border-radius: 6px;
+        /* Enhanced visibility */
+        font-weight: 700;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.65rem;
+        min-width: 40px;
+        min-height: 26px;
+        border-radius: 4px;
+    }
+
+    /* Better button text for small screens */
+    .btn-primary {
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+    }
+
+    /* PDV specific optimizations for 414px screens */
+    .pdv-container {
+        gap: 0.75rem;
+        margin-top: 0.2rem;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .left-panel, .right-panel {
+        padding: 0.875rem;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* Garantir que o sale-details-card contenha o pdv-container em telas de 414px */
+    .sale-details-card .pdv-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .sale-details-card .left-panel,
+    .sale-details-card .right-panel {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* Form optimizations for 414px screens */
+    .form-group {
+        margin-bottom: 0.875rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+        margin-bottom: 0.35rem;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        border-width: 1.5px;
+    }
+
+    /* Product info container for 414px screens */
+    .product-info-container {
+        padding: 0.875rem;
+        border-radius: 8px;
+        margin-top: 0.6rem;
+        min-height: 160px;
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .product-info-container.visible {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .product-info-container h4 {
+        font-size: 0.95rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .product-info-container p {
+        font-size: 0.85rem;
+        margin-bottom: 0.35rem;
+    }
+
+    /* Search results for 414px screens */
+    .search-results {
+        max-height: 280px;
+        border-radius: 8px;
+        margin-top: 0.4rem;
+        overflow-y: scroll;
+        z-index: 9999;
+        position: absolute;
+        background-color: #fff;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        width: 100%;
+    }
+
+    .search-results div {
+        padding: 0.9rem 0.75rem;
+        font-size: 0.85rem;
+        color: #333;
+        font-weight: 500;
+        line-height: 1.6;
+        min-height: 45px;
+        display: flex;
+        align-items: center;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    /* Cart table for 414px screens */
+    #cart-items table {
+        font-size: 0.8rem;
+    }
+
+    #cart-items th,
+    #cart-items td {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.8rem;
+    }
+
+    /* Quantity input for 414px screens */
+    .quantity-input {
+        max-width: 90px;
+        font-size: 0.85rem;
+        padding: 0.6rem;
+    }
+
+    /* Product item controls for 414px */
+    .product-item .controls {
+        gap: 0.75rem;
+    }
+
+    .product-item .controls input {
+        width: 65px;
+        padding: 0.6rem;
+        font-size: 0.85rem;
+    }
+
+    /* Better spacing for product items */
+    .product-item {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .product-item .details {
+        font-size: 0.9rem;
+    }
+
+    /* Sale details card for 414px screens */
+    .sale-details-card {
+        margin: 0.5rem 0;
+        padding: 0.875rem;
+        border-radius: 10px;
+    }
+
+    .sale-details-card h3 {
+        font-size: 1rem;
+        margin-bottom: 0.875rem;
+    }
+
+    .sale-details-card p {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Action buttons for 414px screens */
+    .action-buttons {
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .action-buttons .btn {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        min-height: 42px;
+        border-radius: 8px;
+    }
+
+    /* Button styles for 414px screens */
+    .btn-primary {
+        color: white;
+    }
+
+    .btn-warning {
+        font-weight: 700;
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        border: none;
+        color: white;
+    }
+
+    .btn-danger {
+        font-weight: 700;
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        border: none;
+        color: white;
+    }
+
+    .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Very small screens (360px and below) */
+@media (max-width: 360px) {
+    .container {
+        padding: 0.6rem;
+        font-size: 13px;
+    }
+
+    /* Ultra-compact table styles */
+    table {
+        font-size: 0.7rem;
+        min-width: 450px;
+    }
+
+    table th, table td {
+        padding: 0.3rem 0.2rem;
+    }
+
+    /* Ultra-compact but still visible action buttons */
+    .actions {
+        min-width: 80px;
+        /* Keep sticky for ultra-small screens */
+        position: sticky;
+        right: 0;
+        background: rgba(255, 255, 255, 0.99);
+        backdrop-filter: blur(20px);
+        border-left: 2px solid rgba(102, 126, 234, 0.5);
+    }
+
+    .actions .btn {
+        padding: 0.25rem 0.35rem;
+        font-size: 0.65rem;
+        margin-right: 0.1rem;
+        min-width: 38px;
+        min-height: 26px;
+        border-radius: 4px;
+        /* Maximum visibility for tiny screens */
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-sm {
+        padding: 0.2rem 0.3rem;
+        font-size: 0.6rem;
+        min-width: 32px;
+        min-height: 22px;
+        border-radius: 3px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 0.6rem;
+        font-size: 0.8rem;
+    }
+}
+
+
+/* ================================================== */
+/* MODERN MENU TOGGLE AND MOBILE NAVIGATION */
+/* ================================================== */
+
+/* Modern responsive header styles */
+@media (min-width: 769px) {
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+    
+    header nav {
+        margin-top: 0;
+        margin-left: auto;
+    }
+}
+
+/* --- ULTRA MODERN MENU TOGGLE STYLES --- */
+
+/* Ultra modern hamburger menu button */
+.menu-toggle.modern {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 14px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.25) 0%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(25px) saturate(180%);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        0 4px 16px rgba(0, 0, 0, 0.1),
+        inset 0 2px 0 rgba(255, 255, 255, 0.4),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+}
+
+.menu-toggle.modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.4) 30%, 
+        rgba(255, 255, 255, 0.6) 50%, 
+        rgba(255, 255, 255, 0.4) 70%, 
+        transparent 100%);
+    transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 1;
+}
+
+.menu-toggle.modern::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 0;
+}
+
+.menu-toggle.modern:hover::before {
+    left: 100%;
+}
+
+.menu-toggle.modern:hover::after {
+    width: 60px;
+    height: 60px;
+}
+
+.menu-toggle.modern:hover {
+    background: linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.35) 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0.1) 100%);
+    transform: translateY(-3px) scale(1.08) rotateX(5deg);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.2),
+        0 8px 24px rgba(0, 0, 0, 0.15),
+        inset 0 3px 0 rgba(255, 255, 255, 0.5),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.menu-toggle.modern:active {
+    transform: translateY(-1px) scale(0.96) rotateX(2deg);
+    transition: all 0.15s ease-out;
+}
+
+.menu-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.menu-icon .line {
+    display: block;
+    width: 100%;
+    height: 3.5px;
+    background: linear-gradient(90deg, 
+        #ffffff 0%, 
+        rgba(255, 255, 255, 0.95) 25%, 
+        rgba(255, 255, 255, 0.9) 75%, 
+        rgba(255, 255, 255, 0.85) 100%);
+    border-radius: 3px;
+    position: absolute;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 
+        0 3px 6px rgba(0, 0, 0, 0.15),
+        0 1px 3px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform-origin: center;
+}
+
+.menu-icon .line-1 {
+    top: 0;
+    animation: line1-idle 3s ease-in-out infinite;
+}
+
+.menu-icon .line-2 {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 88%;
+    animation: line2-idle 3s ease-in-out infinite 0.5s;
+}
+
+.menu-icon .line-3 {
+    bottom: 0;
+    width: 75%;
+    animation: line3-idle 3s ease-in-out infinite 1s;
+}
+
+@keyframes line1-idle {
+    0%, 100% { width: 100%; }
+    50% { width: 95%; }
+}
+
+@keyframes line2-idle {
+    0%, 100% { width: 88%; }
+    50% { width: 92%; }
+}
+
+@keyframes line3-idle {
+    0%, 100% { width: 75%; }
+    50% { width: 80%; }
+}
+
+/* Ultra modern X animation for active state */
+.menu-toggle.modern.active .menu-icon .line-1 {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg) scale(1.1);
+    background: linear-gradient(90deg, 
+        #ff6b6b 0%, 
+        #ff8e8e 25%, 
+        #ffb3b3 50%, 
+        #ff8e8e 75%, 
+        #ff6b6b 100%);
+    width: 100%;
+    box-shadow: 
+        0 0 15px rgba(255, 107, 107, 0.4),
+        0 0 30px rgba(255, 107, 107, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    animation: none;
+}
+
+.menu-toggle.modern.active .menu-icon .line-2 {
+    opacity: 0;
+    transform: translateY(-50%) scale(0) rotate(360deg);
+    animation: none;
+}
+
+.menu-toggle.modern.active .menu-icon .line-3 {
+    bottom: 50%;
+    transform: translateY(50%) rotate(-45deg) scale(1.1);
+    background: linear-gradient(90deg, 
+        #ff6b6b 0%, 
+        #ff8e8e 25%, 
+        #ffb3b3 50%, 
+        #ff8e8e 75%, 
+        #ff6b6b 100%);
+    width: 100%;
+    box-shadow: 
+        0 0 15px rgba(255, 107, 107, 0.4),
+        0 0 30px rgba(255, 107, 107, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    animation: none;
+}
+
+.menu-toggle.modern.active {
+    background: linear-gradient(145deg, 
+        rgba(255, 107, 107, 0.3) 0%, 
+        rgba(255, 107, 107, 0.2) 50%, 
+        rgba(255, 107, 107, 0.1) 100%);
+    border-color: rgba(255, 107, 107, 0.4);
+    box-shadow: 
+        0 12px 48px rgba(255, 107, 107, 0.25),
+        0 6px 20px rgba(255, 107, 107, 0.15),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(255, 107, 107, 0.2);
+    transform: scale(1.05);
+}
+
+/* --- MODERN MOBILE RESPONSIVE STYLES --- */
+@media (max-width: 768px) {
+    header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+    }
+
+    header h1 {
+        flex-grow: 1;
+        font-size: 1.6rem;
+    }
+
+    /* Show ultra modern hamburger menu on mobile */
+    .menu-toggle.modern {
+        display: flex;
+    }
+
+    /* Modern mobile sidebar navigation */
+    header nav {
+        display: none;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: -50%;
+        width: 50%;
+        height: 100vh;
+        background: #f8f9fa;
+        border-right: 1px solid #e9ecef;
+        padding: 4rem 1rem 1rem 1rem;
+        gap: 0.5rem;
+        z-index: 998;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+
+    /* Sidebar slide animation */
+    header nav.active {
+        left: 0;
+        display: flex;
+    }
+
+    /* Overlay for sidebar */
+    header nav::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 50%;
+        width: 50%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    header nav.active::before {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Mobile navigation links */
+    header nav a,
+    header nav form {
+        margin: 0;
+        width: 100%;
+    }
+
+    header nav a {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-radius: 6px;
+        background: transparent;
+        border: none;
+        font-size: 0.95rem;
+        transition: background-color 0.2s ease;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        touch-action: manipulation;
+        color: #495057;
+    }
+
+    header nav a:hover {
+        background: #e9ecef;
+        color: #212529;
+    }
+
+    /* Ripple effect for nav links */
+    header nav a {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+    }
+
+    @keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    header nav form button {
+        width: 100%;
+        padding: 0.6rem 0.8rem;
+        text-align: left;
+        font-size: 0.9rem;
+        min-height: 40px;
+    }
+
+    header nav span {
+        margin: 0;
+        text-align: left;
+        padding: 0.6rem 0.8rem;
+        background: transparent;
+        border-radius: 6px;
+        border: none;
+        font-size: 0.9rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        color: #495057;
+    }
+
+    /* User profile section styles */
+    .user-profile-section {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background: #e9ecef;
+        border-radius: 8px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .user-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: #6c757d;
+        border-radius: 50%;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .user-avatar svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #212529;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    /* Page Header Styles - Professional Icon Layout */
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem 0;
+    border-bottom: 2px solid #e9ecef;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.page-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #6f42c1 0%, #8e44ad 100%);
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+    flex-shrink: 0;
+}
+
+.page-icon svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+}
+
+.page-header h1 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments for page header */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .page-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+    }
+    
+    .page-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+    header nav::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    header nav::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+    }
+
+    header nav::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+    }
+
+    header nav::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+
+}
+
+/* Specific optimizations for 6.7" phones (414px) */
+@media (max-width: 414px) {
+    header {
+        padding: 0.6rem 0.8rem;
+    }
+
+    header h1 {
+        font-size: 1.4rem;
+    }
+
+    /* Compact mobile sidebar for 6.7" screens */
+    header nav {
+        padding: 3.5rem 0.8rem 0.8rem 0.8rem;
+        gap: 0.4rem;
+        border-radius: 0 12px 12px 0;
+    }
+
+    header nav a {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.85rem;
+        min-height: 36px;
+        border-radius: 8px;
+        text-align: left;
+        justify-content: flex-start;
+    }
+
+    header nav form button {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.85rem;
+        min-height: 36px;
+        text-align: left;
+    }
+
+    header nav span {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
+        min-height: 36px;
+        border-radius: 8px;
+        text-align: left;
+        justify-content: flex-start;
+    }
+
+    /* Compact modern menu toggle for 6.7" screens */
+    .menu-toggle.modern {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .menu-icon {
+        width: 28px;
+        height: 20px;
+    }
+
+    .menu-icon .line {
+        height: 3px;
+    }
+}
+
+/* Extra compact for very small screens */
+@media (max-width: 360px) {
+    header {
+        padding: 0.5rem 0.6rem;
+    }
+
+    header h1 {
+        font-size: 1.3rem;
+    }
+
+    /* Ultra-compact mobile sidebar */
+    header nav {
+        padding: 3rem 0.6rem 0.6rem 0.6rem;
+        gap: 0.3rem;
+        border-radius: 0 10px 10px 0;
+    }
+
+    header nav a {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.8rem;
+        min-height: 32px;
+        border-radius: 6px;
+        text-align: left;
+        justify-content: flex-start;
+    }
+
+    header nav form button {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.8rem;
+        text-align: left;
+        min-height: 32px;
+    }
+
+    header nav span {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.75rem;
+        min-height: 32px;
+        border-radius: 6px;
+    }
+
+    /* Ultra-compact modern menu toggle */
+    .menu-toggle.modern {
+        padding: 10px;
+        border-radius: 14px;
+    }
+
+    .menu-icon {
+        width: 26px;
+        height: 18px;
+    }
+
+    .menu-icon .line {
+        height: 2.5px;
+    }
+}
+
+
+/* ================================================== */
+/* UTILITY CLASSES */
+/* ================================================== */
+
+/* Modern Header Component Styles */
+.header-title-link {
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1));
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.header-title-link:hover {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    transform: scale(1.02);
+}
+
+.header-user-greeting {
+    color: white;
+    font-weight: 500;
+}
+
+.inline-form {
+    display: inline;
+}
+
+/* Chart container */
+.chart-container {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    padding-top: 20px;
+}
+
+/* Card layouts */
+.centered-card {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.wide-card {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+/* Table styles */
+.scrollable-table {
+    overflow-x: auto;
+}
+
+.product-table-row {
+    width: 300px;
+}
+
+/* Button groups and action containers */
+.action-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.centered-actions {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.button-with-margin {
+    margin-left: 10px;
+}
+
+/* Product info and form elements */
+.product-info-container {
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    display: block;
+    min-height: 200px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.product-info-container.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.quantity-input {
+    width: 80px;
+}
+
+.full-width-button {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Text styles */
+.subtitle-text {
+    margin-top: -10px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-style: italic;
+    color: #555;
+}
+
+.muted-text {
+    color: #666;
+}
+
+/* Dashboard Styles */
+.dashboard-section {
+    margin: 2rem 0;
+    width: 100%;
+    max-width: 800px;
+}
+
+.dashboard-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    border: none;
+}
+
+.dashboard-card .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dashboard-card .header-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.dashboard-card .header-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.dashboard-card .header-text h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.dashboard-card .header-text .subtitle {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+.dashboard-card .card-content {
+    padding: 2rem;
+}
+
+.sale-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    padding: 1.25rem;
+    background: rgba(248, 250, 252, 0.8);
+    border-radius: 12px;
+    border: 1px solid rgba(226, 232, 240, 0.5);
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    background: rgba(241, 245, 249, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.info-item.highlight {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.05));
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.info-item.highlight .info-value {
+    color: #059669;
+    font-weight: 700;
+}
+
+.info-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    color: #1e293b;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.info-value.amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.sale-actions {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.btn-view-details {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-view-details:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #64748b;
+}
+
+.empty-state .empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, rgba(148, 163, 184, 0.1), rgba(203, 213, 225, 0.05));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state .empty-icon svg {
+    width: 48px;
+    height: 48px;
+    color: #94a3b8;
+}
+
+.empty-state h4 {
+    color: #475569;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.btn-start-selling {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-start-selling:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+/* Responsive Dashboard Styles */
+@media (max-width: 768px) {
+    .dashboard-section {
+        margin: 1rem 0;
+    }
+    
+    .dashboard-card .card-header {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .dashboard-card .header-content {
+        gap: 0.75rem;
+    }
+    
+    .dashboard-card .header-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .dashboard-card .header-text h3 {
+        font-size: 1.2rem;
+    }
+    
+    .dashboard-card .card-content {
+        padding: 1.5rem;
+    }
+    
+    .sale-info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .info-item {
+        padding: 1rem;
+    }
+    
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-card .card-header {
+        padding: 1rem;
+    }
+    
+    .dashboard-card .card-content {
+        padding: 1rem;
+    }
+    
+    .dashboard-card .header-text h3 {
+        font-size: 1.1rem;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+    }
+    
+    .info-value.amount {
+        font-size: 1.2rem;
+    }
+}
+
+.col-md-6{
+    color: #1fb85f;
+    background-color: #ece9e9;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    border-radius: 5px;
+    margin-bottom: 18px;
+    padding: 5px;
+}
+.mb-0{
+    color: #14c35d;
+}
+
+/* Dashboard Grid Layout */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+/* Info Grid dentro dos cards */
+.sale-info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item strong {
+    color: #495057;
+    font-weight: 600;
+}
+
+.info-item .value {
+    color: #28a745;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.no-data {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 2rem 0;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.stat-item {
+    padding: 1rem;
+    background: rgba(103, 126, 234, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    background: rgba(103, 126, 234, 0.15);
+    transform: translateY(-2px);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Responsividade para o dashboard grid */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}
+
+/* ===== ESTILOS DA TELA DE LOGIN ===== */
+
+/* Body da tela de login */
+.login-body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Container principal do login */
+.login-container {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Card principal do login */
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* Header do card de login */
+.login-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.login-header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.login-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.login-icon svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+}
+
+.login-header-text h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.login-subtitle {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+/* Conteúdo do card */
+.login-content {
+    padding: 2.5rem;
+}
+
+/* Alertas de login */
+.login-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.login-alert svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.login-alert-error {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.login-alert-success {
+    background: rgba(25, 135, 84, 0.1);
+    color: #198754;
+    border: 1px solid rgba(25, 135, 84, 0.2);
+}
+
+/* Formulário de login */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.login-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.login-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.login-label svg {
+    width: 16px;
+    height: 16px;
+    color: #6b7280;
+}
+
+.login-input {
+    width: 80%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+}
+
+.login-input::placeholder {
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+/* Botão de login */
+.login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.login-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Footer do login */
+.login-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.login-footer p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.login-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.login-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+/* Responsividade para login */
+@media (max-width: 768px) {
+    .login-body {
+        padding: 1rem;
+    }
+    
+    .login-container {
+        max-width: 100%;
+    }
+    
+    .login-header {
+        padding: 1.5rem;
+    }
+    
+    .login-content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .login-header-text h1 {
+        font-size: 1.8rem;
+    }
+    
+    .login-icon {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .login-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-body {
+        padding: 0.5rem;
+    }
+    
+    .login-content {
+        padding: 1.5rem 1rem;
+    }
+    
+    .login-header {
+        padding: 1.25rem;
+    }
+    
+    .login-header-text h1 {
+        font-size: 1.6rem;
+    }
+}
+
+/* ===== DASHBOARD HARMONIZADO COM LOGIN ===== */
+
+/* Dashboard Body - seguindo métricas do login */
+.dashboard-body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    background: linear-gradient(135deg, #32cd32 0%, #f5f7f5 50%, #9acd32 100%);
+    color: #374151;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Dashboard Main */
+.dashboard-main {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2rem;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Welcome Section */
+.welcome-section {
+    margin-bottom: 2rem;
+}
+
+.welcome-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.welcome-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.welcome-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.welcome-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.welcome-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.welcome-text h2 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d5016;
+}
+
+.welcome-text p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+/* Auth Prompt - para usuários não logados */
+.auth-prompt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 3rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.auth-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.auth-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.auth-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.auth-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.auth-text h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.auth-text p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.auth-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.auth-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.auth-btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.auth-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.auth-btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: #374151;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.auth-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsividade do Dashboard */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+    
+    .dashboard-main {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .welcome-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .welcome-text h2 {
+        font-size: 1.25rem;
+    }
+    
+    .auth-card {
+        padding: 2rem;
+        margin: 1rem;
+    }
+    
+    .auth-text h2 {
+        font-size: 1.5rem;
+    }
+    
+    .auth-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .auth-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-container {
+        padding: 0.5rem;
+    }
+    
+    .dashboard-main {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+    
+    .welcome-card {
+        padding: 1rem;
+    }
+    
+    .welcome-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .welcome-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .auth-card {
+        padding: 1.5rem;
+    }
+    
+    .auth-icon {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .auth-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+

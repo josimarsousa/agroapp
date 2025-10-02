@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Perdas</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="page-container">
+        <div class="page-header">
+            <div class="page-header-content">
+                <div class="page-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1L13.5 2.5L16.17 5.17C15.24 5.06 14.32 5 13.4 5C10.3 5 7.4 5.9 5 7.5V9C7.1 7.7 9.7 7 12.4 7C15.1 7 17.7 7.7 19.8 9H21ZM12 22L8 18H16L12 22Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h1>Gerenciar Perdas</h1>
+            </div>
+            <div class="page-actions">
+                <a href="/losses/new" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Nova Perda
+                </a>
+                <button type="button" class="btn btn-secondary" id="exportPdfBtn">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 2H6A2 2 0 0 0 4 4V20A2 2 0 0 0 6 22H18A2 2 0 0 0 20 20V8L14 2Z" stroke="currentColor" stroke-width="2"/>
+                        <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
+                        <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/>
+                        <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
+                        <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Exportar PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <!-- Mensagens de Erro e Sucesso -->
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2"/>
+                        <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <%= error %>
+                </div>
+            <% } %>
+            <% if (typeof success !== 'undefined' && success) { %>
+                <div class="alert alert-success mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <%= success %>
+                </div>
+            <% } %>
+
+            <!-- Filtro de Perdas -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Filtrar Perdas por Data</h3>
+                </div>
+                <div class="card-body">
+                    <form action="/losses" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="start_date" class="form-label">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                Data Inicial
+                            </label>
+                            <input type="date" id="start_date" name="start_date" class="form-control" value="<%= start_date %>">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="end_date" class="form-label">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                Data Final
+                            </label>
+                            <input type="date" id="end_date" name="end_date" class="form-control" value="<%= end_date %>">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                    Filtrar
+                                </button>
+                                <a href="/losses" class="btn btn-secondary">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                                    </svg>
+                                    Limpar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lista de Perdas -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Lista de Perdas</h3>
+                </div>
+                <div class="card-body">
+                    <% if (losses.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Produto</th>
+                                        <th>Quantidade</th>
+                                        <th>Motivo</th>
+                                        <th>Data da Perda</th>
+                                        <th>Observações</th>
+                                        <th class="actions">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% losses.forEach(loss => { %>
+                                        <tr>
+                                            <td data-label="ID"><%= loss.id %></td>
+                                            <td data-label="Produto"><%= loss.Product ? loss.Product.name : 'N/A' %></td>
+                                            <td data-label="Quantidade"><%= loss.quantity %></td>
+                                            <td data-label="Motivo"><%= loss.reason %></td>
+                                            <td data-label="Data da Perda"><%= new Date(loss.loss_date).toLocaleDateString('pt-BR') %></td>
+                                            <td data-label="Observações"><%= loss.notes || 'N/A' %></td>
+                                            <td data-label="Ações" class="actions">
+                                                <a href="/losses/edit/<%= loss.id %>" class="btn btn-primary btn-sm">
+                                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M11 4H4A2 2 0 0 0 2 6V20A2 2 0 0 0 4 22H18A2 2 0 0 0 20 20V13" stroke="currentColor" stroke-width="2"/>
+                                                        <path d="M18.5 2.5A2.121 2.121 0 0 1 21 5L12 14L8 15L9 11L18.5 2.5Z" stroke="currentColor" stroke-width="2"/>
+                                                    </svg>
+                                                    Editar
+                                                </a>
+                                                <form action="/losses/delete/<%= loss.id %>" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta perda?');" class="inline-form">
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2"/>
+                                                            <path d="M19,6V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V6M8,6V4A2,2 0 0,1 10,2H14A2,2 0 0,1 16,4V6" stroke="currentColor" stroke-width="2"/>
+                                                        </svg>
+                                                        Excluir
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1L13.5 2.5L16.17 5.17C15.24 5.06 14.32 5 13.4 5C10.3 5 7.4 5.9 5 7.5V9C7.1 7.7 9.7 7 12.4 7C15.1 7 17.7 7.7 19.8 9H21ZM12 22L8 18H16L12 22Z" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <h3>Nenhuma perda encontrada</h3>
+                            <p>Não há perdas registradas para o período selecionado.</p>
+                            <a href="/losses/new" class="btn btn-primary">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                                    <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                Registrar Nova Perda
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/script.js"></script>
+<script>
+function exportPDF() {
+    const startDate = document.getElementById('start_date').value;
+    const endDate = document.getElementById('end_date').value;
+    let url = '/losses/export-pdf';
+    
+    // Construir parâmetros da URL
+    const params = new URLSearchParams();
+    if (startDate) {
+        params.append('start_date', startDate);
+    }
+    if (endDate) {
+        params.append('end_date', endDate);
+    }
+    
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    
+    // Verificar se a requisição foi bem-sucedida
+    fetch(url, {
+        method: 'GET',
+        credentials: 'same-origin' // Inclui cookies de autenticação
+    })
+    .then(response => {
+        if (response.ok) {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/pdf')) {
+                // Se a resposta é um PDF válido, abrir em nova aba
+                window.open(url, '_blank');
+            } else {
+                console.error('Resposta não é um PDF. Content-Type:', contentType);
+                alert('Erro: A resposta do servidor não é um PDF válido.');
+            }
+        } else if (response.status === 401) {
+            // Se não autorizado, mostrar mensagem e redirecionar para login
+            alert('Sua sessão expirou. Você será redirecionado para a página de login.');
+            window.location.href = '/auth/login';
+        } else {
+            // Outros erros
+            console.error('Erro na exportação:', response.status, response.statusText);
+            alert(`Erro ao gerar o PDF: ${response.status} - ${response.statusText}`);
+        }
+    })
+    .catch(error => {
+        console.error('Erro na requisição:', error);
+        alert('Erro ao conectar com o servidor. Verifique sua conexão.');
+    });
+}
+
+// Adicionar event listener quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    const exportBtn = document.getElementById('exportPdfBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportPDF);
+    }
+});
+</script>
+</body>
+</html>

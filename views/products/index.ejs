@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="page-container fade-in">
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="page-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h1><%= title %></h1>
+        </div>
+        <div class="page-actions">
+            <a href="/products/new" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                    <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Adicionar Novo Produto
+            </a>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <% if (products.length > 0) { %>
+            <div class="table-container slide-in">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px; text-align: center;">ID</th>
+                                <th style="min-width: 150px;">Nome</th>
+                                <th style="min-width: 200px;">Descrição</th>
+                                <th style="width: 120px; text-align: center;">Preço</th>
+                                <th style="width: 100px; text-align: center;">Estoque</th>
+                                <th style="min-width: 120px;">Categoria</th>
+                                <th style="width: 120px; text-align: center;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% products.forEach(product => { %>
+                                <tr>
+                                    <td data-label="ID" style="width: 80px; text-align: center;">
+                                        <span class="badge badge-primary">#<%= product.id %></span>
+                                    </td>
+                                    <td data-label="Nome" style="min-width: 180px; text-align: left;">
+                                        <strong><%= product.name %></strong>
+                                    </td>
+                                    <td data-label="Descrição" style="min-width: 200px; text-align: left;">
+                                        <% if (product.description) { %>
+                                            <%= product.description %>
+                                        <% } else { %>
+                                            <span class="text-muted">N/A</span>
+                                        <% } %>
+                                    </td>
+                                    <td data-label="Preço" style="width: 120px; text-align: right;">
+                                        <% if (product.price) { %>
+                                            R$ <%= parseFloat(product.price).toFixed(2) %>
+                                        <% } else { %>
+                                            <span class="text-muted">N/A</span>
+                                        <% } %>
+                                    </td>
+                                    <td data-label="Estoque" style="width: 100px; text-align: center;">
+                                        <% if (product.stock_quantity !== null && product.stock_quantity !== undefined) { %>
+                                            <span class="badge <%= product.stock_quantity > 0 ? 'badge-success' : 'badge-danger' %>">
+                                                <%= product.stock_quantity %>
+                                            </span>
+                                        <% } else { %>
+                                            <span class="text-muted">N/A</span>
+                                        <% } %>
+                                    </td>
+                                    <td data-label="Categoria" style="width: 140px; text-align: left;">
+                                        <% if (product.Category && product.Category.name) { %>
+                                            <%= product.Category.name %>
+                                        <% } else { %>
+                                            <span class="text-muted">N/A</span>
+                                        <% } %>
+                                    </td>
+                                    <td data-label="Ações" class="actions" style="width: 180px; text-align: center;">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <a href="/products/edit/<%= product.id %>" class="btn btn-primary btn-sm">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M18.5 2.50023C18.8978 2.1024 19.4374 1.87891 20 1.87891C20.5626 1.87891 21.1022 2.1024 21.5 2.50023C21.8978 2.89805 22.1213 3.43762 22.1213 4.00023C22.1213 4.56284 21.8978 5.1024 21.5 5.50023L12 15.0002L8 16.0002L9 12.0002L18.5 2.50023Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                Editar
+                                            </a>
+                                            <form action="/products/delete/<%= product.id %>" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este produto?');" class="d-inline">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <path d="M19,6V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V6M8,6V4A2,2 0 0,1 10,2H14A2,2 0 0,1 16,4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                    Excluir
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="card fade-in">
+                <div class="card-body text-center p-5">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--text-light); margin-bottom: 1rem;">
+                        <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h3 class="mb-3">Nenhum produto cadastrado</h3>
+                    <p class="mb-4">Comece adicionando seu primeiro produto ao sistema.</p>
+                    <a href="/products/new" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Adicionar Primeiro Produto
+                    </a>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script src="/js/script.js"></script>
+</body>
+</html>

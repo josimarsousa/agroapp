@@ -1,0 +1,48 @@
+{
+  "name": "agroapp",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "NODE_ENV=production node app.js",
+    "dev": "NODE_ENV=development node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Build completed - ready for production\"",
+    "migrate": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "seed": "npx sequelize-cli db:seed:all",
+    "seed:undo": "npx sequelize-cli db:seed:undo:all",
+    "db:setup": "npm run migrate && npm run seed",
+    "prod:setup": "NODE_ENV=production npm run migrate",
+    "logs": "tail -f logs/app.log",
+    "health": "curl -f http://localhost:3001/health || exit 1"
+  },
+  "keywords": ["agriculture", "management", "nodejs", "express"],
+  "author": "AgroApp Team",
+  "license": "ISC",
+  "description": "Sistema de gestão agrícola para controle de colheitas, vendas e perdas",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "blob-stream": "^0.1.3",
+    "compression": "^1.8.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.1",
+    "express-session": "^1.18.1",
+    "express-slow-down": "^3.0.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
+    "mysql2": "^3.14.1",
+    "pdfkit": "^0.17.1",
+    "puppeteer": "^24.22.0",
+    "sequelize": "^6.37.7"
+  }
+}

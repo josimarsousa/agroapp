@@ -1,0 +1,97 @@
+<header class="agroapp-header">
+    <div class="header-container">
+        <!-- Logo/Brand -->
+        <div class="header-brand">
+            <a href="/" class="brand-link">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <span class="brand-text">agroApp</span>
+            </a>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle Menu">
+            <span class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+
+        <!-- Navigation -->
+        <nav class="main-nav" id="main-nav">
+            <% if (isAuthenticated) { %>
+                <!-- Primary Navigation -->
+                <div class="nav-section">
+                    <!-- Gestão Dropdown -->
+                    <div class="nav-dropdown">
+                        <button class="nav-dropdown-toggle">
+                            Gestão
+                            <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none">
+                                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </button>
+                        <div class="nav-dropdown-menu">
+                            <a href="/users" class="nav-dropdown-item">Usuários</a>
+                            <a href="/customers" class="nav-dropdown-item">Clientes</a>
+                            <a href="/products" class="nav-dropdown-item">Produtos</a>
+                            <a href="/categories" class="nav-dropdown-item">Categorias</a>
+                        </div>
+                    </div>
+
+                    <!-- Operações Dropdown -->
+                    <div class="nav-dropdown">
+                        <button class="nav-dropdown-toggle">
+                            Operações
+                            <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none">
+                                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </button>
+                        <div class="nav-dropdown-menu">
+                            <a href="/sales/pdv" class="nav-dropdown-item nav-highlight">Vendas PDV</a>
+                            <a href="/sales" class="nav-dropdown-item">Historico de vendas</a>
+                            <a href="/harvests/new" class="nav-dropdown-item">Nova Colheita</a>
+                            <a href="/harvests" class="nav-dropdown-item">Colheitas</a>
+                            <a href="/losses/new" class="nav-dropdown-item">Nova Perda</a>
+                            <a href="/losses" class="nav-dropdown-item">Perdas</a>
+                        </div>
+                    </div>
+
+                    <% if (user && (user.role === 'admin' || user.role === 'manager')) { %>
+                        <!-- Administração Dropdown -->
+                        <div class="nav-dropdown">
+                            <button class="nav-dropdown-toggle">
+                                Administração
+                                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none">
+                                    <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </button>
+                            <div class="nav-dropdown-menu">
+                                <a href="/history" class="nav-dropdown-item">Histórico</a>
+                                <a href="/charts" class="nav-dropdown-item">Gráficos</a>
+                                <a href="/settlement" class="nav-dropdown-item">Acerto</a>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- User Actions -->
+                <div class="nav-actions">
+                    
+                    <form action="/auth/logout" method="POST" class="logout-form">
+                        <button type="submit" class="logout-btn">Sair</button>
+                    </form>
+                </div>
+            <% } else { %>
+                <!-- Auth Links -->
+                <div class="nav-auth">
+                    <a href="/auth/login" class="auth-link">Login</a>
+                    <a href="/auth/register" class="auth-link auth-register">Registrar</a>
+                </div>
+            <% } %>
+        </nav>
+    </div>
+</header>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar-modern.css">
+    <link rel="stylesheet" href="/css/menu-override.css">
+    <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body>
+<%- include('../partials/header') %>
+
+<div class="page-container fade-in">
+    <div class="page-header">
+        <div class="page-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4ZM4 6V18H20V6H4ZM6 8H18V10H6V8ZM6 12H10V14H6V12ZM12 12H18V14H12V12ZM6 16H8V18H6V16ZM10 16H12V18H10V16ZM14 16H18V18H14V16Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <h1><%= title %></h1>
+    </div>
+    
+    <div class="page-content">
+        <div class="card slide-in">
+            <div class="pdv-container">
+                <div class="left-panel">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="d-flex align-items-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16 7C16 9.2 14.2 11 12 11S8 9.2 8 7 9.8 3 12 3 16 4.8 16 7ZM12 14C16.4 14 20 15.8 20 18V21H4V18C4 15.8 7.6 14 12 14Z" fill="currentColor"/>
+                                </svg>
+                                Informações da Venda
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="customerSelect">Cliente</label>
+                                <select id="customerSelect" class="form-control">
+                                    <option value="">Cliente Avulso</option>
+                                    <% customers.forEach(customer => { %>
+                                        <option value="<%= customer.id %>"><%= customer.name %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="d-flex align-items-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Adicionar Produtos
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="productSearch">Buscar Produto (nome ou ID)</label>
+                                <input type="text" id="productSearch" placeholder="Digite o nome ou ID do produto" class="form-control">
+                                <div id="searchResults" class="search-results"></div>
+                            </div>
+
+                            <div id="selectedProductInfo" class="product-info-container">
+                                <h4 class="mb-3">Produto Selecionado:</h4>
+                                <div class="product-details mb-3">
+                                    <p><strong>Nome:</strong> <span id="productName"></span></p>
+                                    <p><strong>Preço:</strong> R$ <span id="productPrice"></span></p>
+                                    <p><strong>Estoque:</strong> <span id="productStock"></span></p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="quantity">Quantidade</label>
+                                    <input type="number" id="quantity" value="1" min="1" class="form-control quantity-input">
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button id="addToCartBtn" class="btn btn-success">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem;">
+                                            <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 17.9 19 19 19S21 18.1 21 17V13M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        Adicionar ao Carrinho
+                                    </button>
+                                    <input type="hidden" id="selectedProductId">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="d-flex align-items-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 17.9 19 19 19S21 18.1 21 17V13M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Itens da Venda
+                            </h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <div id="cart-items">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Qtd</th>
+                                            <th>Preço Unit.</th>
+                                            <th>Subtotal</th>
+                                            <th class="actions">Ações</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="cartTableBody">
+                                        </tbody>
+                                        <tfoot>
+                                        <tr class="total-row">
+                                            <td colspan="4"><strong>Total:</strong></td>
+                                            <td><strong id="cartTotal">R$ 0,00</strong></td>
+                                        </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button id="finalizeSaleBtn" class="btn btn-primary btn-lg">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem;">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Finalizar Venda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/main.js"></script>
+<script src="/js/script.js"></script>
+</body>
+</html>
