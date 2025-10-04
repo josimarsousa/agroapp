@@ -4,7 +4,7 @@ const { Op, Sequelize } = require('sequelize');
 const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
 
-// Exibir view de acerto com filtros
+// Exibir filtros
 exports.settlementView = async (req, res) => {
     try {
         let { start_date, end_date } = req.query;
