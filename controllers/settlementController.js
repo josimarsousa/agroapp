@@ -1,7 +1,8 @@
 // controllers/settlementController.js
 const { Sale, SaleItem, Loss, Product, Category, User, Customer } = require('../models');
 const { Op, Sequelize } = require('sequelize');
-const puppeteer = require('puppeteer');
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
 
 // Exibir view de acerto com filtros
 exports.settlementView = async (req, res) => {
@@ -406,8 +407,13 @@ exports.exportSettlementPDF = async (req, res) => {
         </html>
         `;
         
-        // Gerar PDF com Puppeteer
-        const browser = await puppeteer.launch({ headless: true });
+        // Gerar PDF com Puppeteer (compatível com Vercel)
+        const browser = await puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath(),
+            headless: chromium.headless,
+        });
         const page = await browser.newPage();
         await page.setContent(htmlContent);
         

@@ -146,8 +146,10 @@ app.use(cookieParser());
 
 // Sincroniza os modelos com o banco de dados (certifique-se de que isso esteja acontecendo)
 const { sequelize } = require('./models');
-sequelize.sync()
-    .catch(err => console.error('Erro ao sincronizar banco de dados:', err));
+if (process.env.NODE_ENV !== 'production') {
+    sequelize.sync()
+        .catch(err => console.error('Erro ao sincronizar banco de dados:', err));
+}
 
 // Configuração do View Engine (EJS)
 app.set('views', path.join(__dirname, 'views'));
@@ -419,8 +421,13 @@ app.use((err, req, res, next) => {
     res.status(500).render('error', { message: 'Ocorreu um erro no servidor.', error: err });
 });
 
-// Iniciar o servidor
+// Iniciar o servidor (apenas quando rodando localmente)
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Servidor rodando na porta ${PORT}`);
+    });
+}
+
+// Exportar o app para ser utilizado por plataformas serverless (como Vercel)
+module.exports = app;
