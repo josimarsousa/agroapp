@@ -5,11 +5,14 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const authMiddleware = (req, res, next) => {
     // Tenta obter o token do cookie (se você o armazenar lá)
-    const token = req.cookies.token; // Armazenamos o token na sessão
+    const token = req.cookies && req.cookies.token; // Armazenamos o token na sessão
+
+    // Determina se a requisição espera JSON de forma segura
+    const acceptsJson = typeof req.headers.accept === 'string' ? req.headers.accept.includes('json') : false;
 
     if (!token) {
         // Verifica se é uma requisição AJAX/API
-        if (req.xhr || req.headers.accept.indexOf('json') > -1 || req.path.startsWith('/api/')) {
+        if (req.xhr || acceptsJson || (req.path && req.path.startsWith('/api/'))) {
             return res.status(401).json({ 
                 success: false, 
                 message: 'Acesso negado. Faça login novamente.',
@@ -29,7 +32,7 @@ const authMiddleware = (req, res, next) => {
         console.error('Token inválido ou expirado:', error.message);
         
         // Verifica se é uma requisição AJAX/API
-        if (req.xhr || req.headers.accept.indexOf('json') > -1 || req.path.startsWith('/api/')) {
+        if (req.xhr || acceptsJson || (req.path && req.path.startsWith('/api/'))) {
             return res.status(401).json({ 
                 success: false, 
                 message: 'Token inválido ou expirado. Faça login novamente.',
@@ -37,10 +40,14 @@ const authMiddleware = (req, res, next) => {
             });
         }
         
-        // Para requisições normais, limpa a sessão e redireciona
-        req.session.destroy(() => {
+        // Para requisições normais, limpa a sessão e redireciona de forma segura
+        if (req.session && typeof req.session.destroy === 'function') {
+            req.session.destroy(() => {
+                res.redirect('/auth/login');
+            });
+        } else {
             res.redirect('/auth/login');
-        });
+        }
     }
 };
 
