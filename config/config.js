@@ -40,3 +40,13 @@ module.exports = {
     // }
   }
 };
+
+// Log de depuração opcional para ver as credenciais resolvidas em produção (sem expor senha)
+if (process.env.DEBUG_DB_CONFIG === 'true') {
+  console.log('DB config (production):', {
+    host: module.exports.production.host,
+    port: module.exports.production.port,
+    database: module.exports.production.database,
+    username: module.exports.production.username
+  });
+}
