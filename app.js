@@ -62,7 +62,7 @@ const apiLimiter = rateLimit({
 const speedLimiter = slowDown({
     windowMs: 15 * 60 * 1000, // 15 minutos
     delayAfter: 50, // Permite 50 requisições por janela sem delay
-    delayMs: 500, // Adiciona 500ms de delay para cada requisição após o limite
+    delayMs: () => 500, // Adiciona 500ms de delay constante após o limite (v2+)
     maxDelayMs: 20000, // Delay máximo de 20 segundos
     skipFailedRequests: false,
     skipSuccessfulRequests: false,
