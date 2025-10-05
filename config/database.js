@@ -13,9 +13,15 @@ const sequelize = new Sequelize(
         pool: {
             max: 5,
             min: 0,
-            acquire: 30000,
+            acquire: 60000,
             idle: 10000
-        }
+        },
+        dialectOptions: (process.env.DB_SSL === 'true' || process.env.MYSQL_SSL === 'true') ? {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        } : undefined
     }
 );
 

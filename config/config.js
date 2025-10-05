@@ -29,15 +29,15 @@ module.exports = {
     pool: {
       max: 10,
       min: 0,
-      acquire: 30000,
+      acquire: 60000,
       idle: 10000
     },
-    // Caso seu provedor exija SSL, descomente abaixo e forneça o CA
-    // dialectOptions: {
-    //   ssl: {
-    //     ca: fs.readFileSync(path.join(__dirname, 'mysql-ca-main.crt')),
-    //   }
-    // }
+    dialectOptions: (process.env.DB_SSL === 'true' || process.env.MYSQL_SSL === 'true') ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    } : undefined
   }
 };
 
@@ -47,6 +47,7 @@ if (process.env.DEBUG_DB_CONFIG === 'true') {
     host: module.exports.production.host,
     port: module.exports.production.port,
     database: module.exports.production.database,
-    username: module.exports.production.username
+    username: module.exports.production.username,
+    ssl: (process.env.DB_SSL === 'true' || process.env.MYSQL_SSL === 'true') || false
   });
 }
