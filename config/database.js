@@ -2,11 +2,12 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
+    process.env.DB_NAME || process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE,
+    process.env.DB_USER || process.env.MYSQLUSER || process.env.MYSQL_USER,
+    process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD,
     {
-        host: process.env.DB_HOST,
+        host: process.env.DB_HOST || process.env.MYSQLHOST || process.env.MYSQL_HOST,
+        port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : (process.env.MYSQLPORT ? parseInt(process.env.MYSQLPORT, 10) : (process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT, 10) : 3306)),
         dialect: 'mysql',
         logging: false, // Desabilita o log de queries no console
         pool: {
