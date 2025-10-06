@@ -425,11 +425,14 @@ exports.exportSettlementPDF = async (req, res) => {
         if (process.env.DEBUG_PDF === 'true') {
             console.log('Puppeteer executablePath:', execPath);
         }
+        const launchArgs = isLinux
+            ? [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+            : ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
         const browser = await puppeteer.launch({
-            args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+            args: launchArgs,
             defaultViewport: chromium.defaultViewport,
             executablePath: execPath,
-            headless: true,
+            headless: 'new',
         });
         const page = await browser.newPage();
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
