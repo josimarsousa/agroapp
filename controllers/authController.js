@@ -75,8 +75,9 @@ exports.getRegisterForm = (req, res) => {
     res.render('auth/register',
         {
             title: 'Registrar',
-            errorMessage: req.flash('error'),
-            successMessage: req.flash('success')
+            // A view espera "error" e opcionalmente "success"
+            error: req.flash('error'),
+            success: req.flash('success')
 
         });
 };
@@ -86,6 +87,16 @@ exports.registerUser = async (req, res) => {
     const { username, password, role } = req.body;
 
     try {
+        // Validações básicas
+        if (!username || !password) {
+            req.flash('error', 'Usuário e senha são obrigatórios.');
+            return res.redirect('/auth/register');
+        }
+        if (password.length < 4) {
+            req.flash('error', 'A senha deve ter pelo menos 4 caracteres.');
+            return res.redirect('/auth/register');
+        }
+
         // Verificar se o usuário já existe
         const existingUser = await User.findOne({ where: { username } });
         if (existingUser) {
@@ -97,13 +108,21 @@ exports.registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        await User.create({ username, password: hashedPassword, role });
+        // Garantir um valor seguro para role
+        const roleValue = (role && typeof role === 'string' && role.trim().length > 0) ? role.trim() : 'user';
+
+        await User.create({ username, password: hashedPassword, role: roleValue });
 
         req.flash('success', 'Usuário registrado com sucesso! Faça login.');
         res.redirect('/auth/login');
 
     } catch (error) {
-        console.error('Erro no registro:', error);
+        console.error('Erro no registro:', {
+            message: error.message,
+            name: error.name,
+            errors: error.errors || null,
+            stack: error.stack
+        });
         req.flash('error', 'Ocorreu um erro ao registrar o usuário.');
         res.redirect('/auth/register');
     }
