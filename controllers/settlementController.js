@@ -407,15 +407,32 @@ exports.exportSettlementPDF = async (req, res) => {
         </html>
         `;
         
-        // Gerar PDF com Puppeteer (compatível com Vercel)
+        // Gerar PDF com Puppeteer (compatível com Vercel/Railway e fallback local)
+        const isLinux = process.platform === 'linux';
+        const customExecPath = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH;
+        let execPath;
+        if (customExecPath) {
+            execPath = customExecPath;
+        } else if (isLinux) {
+            execPath = await chromium.executablePath();
+        } else {
+            // Fallback para ambientes locais (macOS/Windows)
+            execPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+            if (process.platform === 'win32') {
+                execPath = 'C\\\:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+            }
+        }
+        if (process.env.DEBUG_PDF === 'true') {
+            console.log('Puppeteer executablePath:', execPath);
+        }
         const browser = await puppeteer.launch({
-            args: chromium.args,
+            args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
             defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
+            executablePath: execPath,
+            headless: true,
         });
         const page = await browser.newPage();
-        await page.setContent(htmlContent);
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
         
         const pdfBuffer = await page.pdf({
             format: 'A4',
@@ -436,7 +453,10 @@ exports.exportSettlementPDF = async (req, res) => {
         res.send(pdfBuffer);
         
     } catch (error) {
-        console.error('Erro ao gerar PDF:', error);
-        res.status(500).json({ error: 'Erro ao gerar PDF' });
+        console.error('Erro ao gerar PDF:', error && error.stack ? error.stack : error);
+        if (process.env.DEBUG_PDF === 'true') {
+            return res.status(500).json({ error: 'Erro ao gerar PDF', detail: error.message || String(error) });
+        }
+        return res.status(500).json({ error: 'Erro ao gerar PDF' });
     }
 };
