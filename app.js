@@ -73,11 +73,13 @@ const corsOptions = {
     origin: function (origin, callback) {
         if (process.env.NODE_ENV === 'production') {
             // Em produção, usar apenas origens específicas
-            const allowedOrigins = process.env.CORS_ORIGIN ? 
-                process.env.CORS_ORIGIN.split(',') : 
+            const allowedOriginsRaw = process.env.CORS_ORIGIN;
+            const allowAll = allowedOriginsRaw === '*';
+            const allowedOrigins = allowedOriginsRaw ? 
+                allowedOriginsRaw.split(',') : 
                 ['https://your-domain.com'];
             
-            if (!origin || allowedOrigins.includes(origin)) {
+            if (allowAll || !origin || allowedOrigins.includes(origin)) {
                 callback(null, true);
             } else {
                 callback(new Error('Não permitido pelo CORS'));
@@ -104,6 +106,13 @@ const corsOptions = {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
+
+// Inicializa variáveis padrão nas views antes de qualquer middleware que possa lançar erro
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = false;
+    res.locals.user = null;
+    next();
+});
 
 app.use(cors(corsOptions));
 
