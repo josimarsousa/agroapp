@@ -13,6 +13,7 @@ const cors = require('cors');
 const compression = require('compression');
 const slowDown = require('express-slow-down');
 const helmet = require('helmet');
+const { Op } = require('sequelize');
 
 const { authMiddleware, authorizeRole } = require('./middleware/authMiddleware');
 
@@ -162,7 +163,7 @@ app.use(
 app.use(cookieParser());
 
 // DB sync só em dev
-const { sequelize } = require('./models');
+const { sequelize, Sale, SaleItem, Customer, User } = require('./models');
 if (process.env.NODE_ENV !== 'production') {
   sequelize.sync().catch((err) =>
     console.error('Erro ao sincronizar banco de dados:', err)
@@ -308,6 +309,68 @@ app.get(
   authMiddleware,
   authorizeRole(['admin', 'manager']),
   chartsController.getLossesChartData
+);
+
+// Dashboard
+app.get(
+  '/dashboard',
+  authMiddleware,
+  authorizeRole(['admin', 'manager']),
+  async (req, res) => {
+    try {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const [lastSale, salesToday, totalProducts, totalCustomers] = await Promise.all([
+        Sale.findOne({
+          order: [['sale_date', 'DESC']],
+          include: [
+            { model: Customer, as: 'customer' },
+            { model: User, as: 'user' },
+          ],
+        }),
+        Sale.count({
+          where: {
+            sale_date: {
+              [Op.between]: [startOfDay, endOfDay],
+            },
+          },
+        }),
+        SaleItem.sum('quantity', {
+          include: [
+            {
+              model: Sale,
+              as: 'sale',
+              where: {
+                sale_date: {
+                  [Op.between]: [startOfDay, endOfDay],
+                },
+              },
+            },
+          ],
+        }),
+        Customer.count(),
+      ]);
+
+      return res.render('dashboard', {
+        title: 'Dashboard',
+        isAuthenticated: res.locals.isAuthenticated,
+        user: res.locals.user,
+        successMessage: res.locals.successMessage,
+        errorMessage: res.locals.errorMessage,
+        lastSale: lastSale || null,
+        salesToday: salesToday || 0,
+        totalProducts: totalProducts || 0,
+        totalCustomers: totalCustomers || 0,
+      });
+    } catch (error) {
+      console.error('Erro ao carregar o dashboard:', error);
+      req.flash('error', 'Não foi possível carregar o dashboard.');
+      return res.redirect('/');
+    }
+  }
 );
 
 // Dashboard/login redirect
