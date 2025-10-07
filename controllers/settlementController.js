@@ -225,7 +225,9 @@ exports.exportSettlementPDF = async (req, res) => {
         
         // Buscar perdas do período
         const losses = await Loss.findAll({
-            where: whereClause,
+            where: {
+                loss_date: whereClause.createdAt || {}
+            },
             include: [
                 {
                     model: Product,
@@ -411,28 +413,40 @@ exports.exportSettlementPDF = async (req, res) => {
         const isLinux = process.platform === 'linux';
         const customExecPath = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH;
         let execPath;
-        if (customExecPath) {
+        if (customExecPath && customExecPath.trim()) {
             execPath = customExecPath;
         } else if (isLinux) {
             execPath = await chromium.executablePath();
+            if (!execPath) {
+                const candidates = [
+                    '/usr/bin/chromium',
+                    '/usr/bin/chromium-browser',
+                    '/usr/bin/google-chrome',
+                    '/opt/google/chrome/chrome'
+                ];
+                execPath = candidates.find(p => require('fs').existsSync(p));
+            }
         } else {
             // Fallback para ambientes locais (macOS/Windows)
-            execPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-            if (process.platform === 'win32') {
-                execPath = 'C\\\:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+            if (process.platform === 'darwin') {
+                execPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+            } else if (process.platform === 'win32') {
+                execPath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
             }
+        }
+        if (!execPath) {
+            throw new Error('Caminho do executável do Chrome/Chromium não encontrado. Defina CHROME_EXECUTABLE_PATH.');
         }
         if (process.env.DEBUG_PDF === 'true') {
             console.log('Puppeteer executablePath:', execPath);
         }
-        const launchArgs = isLinux
-            ? [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-            : ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
+        const launchArgs = isLinux ? [...chromium.args] : [];
+        launchArgs.push('--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage');
         const browser = await puppeteer.launch({
             args: launchArgs,
             defaultViewport: chromium.defaultViewport,
             executablePath: execPath,
-            headless: 'new',
+            headless: (chromium.headless ?? true),
         });
         const page = await browser.newPage();
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
