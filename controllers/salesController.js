@@ -111,13 +111,11 @@ exports.getPdvPage = async (req, res) => {
 
 // Finalizar uma venda (API endpoint)
 exports.finalizeSale = async (req, res) => {
-    const transaction = await sequelize.transaction(); // Inicia uma transação
     const { customer_id, items } = req.body;
     const user_id = req.user.id;
 
+    // Validação antes de iniciar transação
     if (!items || items.length === 0) {
-        await transaction.rollback(); // Rollback antes de sair
-        
         // Verifica se é uma requisição AJAX
         if (req.xhr || (typeof req.headers.accept === 'string' && req.headers.accept.includes('json'))) {
             return res.status(400).json({
@@ -125,12 +123,14 @@ exports.finalizeSale = async (req, res) => {
                 message: 'Nenhum item na venda. Adicione produtos para finalizar.'
             });
         }
-        
+
         req.flash('error', 'Nenhum item na venda. Adicione produtos para finalizar.');
-        return res.redirect('/sales/pdv'); // Redireciona de volta para o PDV
+        return res.redirect('/sales/pdv');
     }
 
+    let transaction;
     try {
+        transaction = await sequelize.transaction(); // Inicia uma transação
         let total_amount = 0;
         const saleItemsForCreation = [];
 

@@ -18,13 +18,21 @@ const sequelize = new Sequelize(
         host: DB_HOST,
         port: DB_PORT,
         dialect: 'mysql',
-        logging: false, // Desabilita o log de queries no console
+        logging: process.env.SEQUELIZE_LOGGING === 'true' ? console.log : false,
         pool: {
             max: 5,
             min: 0,
             acquire: 30000,
             idle: 10000
-        }
+        },
+        ...(process.env.MYSQL_SSL === 'true' ? {
+            dialectOptions: {
+                ssl: {
+                    require: true,
+                    rejectUnauthorized: false
+                }
+            }
+        } : {})
     }
 );
 

@@ -162,12 +162,25 @@ app.use(
 
 app.use(cookieParser());
 
-// DB sync só em dev
-const { sequelize, Sale, SaleItem, Customer, User } = require('./models');
+// DB connect and sync
+const { sequelize, connectDB, Sale, SaleItem, Customer, User } = require('./models');
+// Conecta ao banco para falhar cedo se houver problema
+if (connectDB && typeof connectDB === 'function') {
+  connectDB();
+}
+// Sync só em dev por padrão
 if (process.env.NODE_ENV !== 'production') {
   sequelize.sync().catch((err) =>
     console.error('Erro ao sincronizar banco de dados:', err)
   );
+}
+// Em produção, permitir sincronização opcional via env
+if (process.env.NODE_ENV === 'production' && process.env.ENABLE_DB_SYNC === 'true') {
+  const alter = process.env.DB_SYNC_ALTER === 'true';
+  sequelize
+    .sync({ alter })
+    .then(() => console.log('Sincronização de modelos em produção concluída.'))
+    .catch((err) => console.error('Erro ao sincronizar modelos em produção:', err));
 }
 
 // View engine
@@ -396,6 +409,13 @@ app.get('/', (req, res) => {
 
 // 404
 app.use((req, res, next) => {
+  const acceptsJson = typeof req.headers.accept === 'string' ? req.headers.accept.includes('json') : false;
+  if (req.xhr || acceptsJson || (req.path && req.path.startsWith('/api/'))) {
+    return res.status(404).json({
+      success: false,
+      message: 'Página não encontrada.'
+    });
+  }
   res.status(404).render('error', {
     message: 'Página não encontrada.',
     isAuthenticated: res.locals.isAuthenticated,
@@ -408,6 +428,14 @@ app.use((req, res, next) => {
 // Erros
 app.use((err, req, res, next) => {
   console.error(err);
+  const acceptsJson = typeof req.headers.accept === 'string' ? req.headers.accept.includes('json') : false;
+  if (req.xhr || acceptsJson || (req.path && req.path.startsWith('/api/'))) {
+    return res.status(500).json({
+      success: false,
+      message: err && err.message ? err.message : 'Ocorreu um erro no servidor.',
+      ...(process.env.NODE_ENV === 'production' ? {} : { error: { message: err.message, stack: err.stack } })
+    });
+  }
   res.status(500).render('error', {
     message: 'Ocorreu um erro no servidor.',
     error: process.env.NODE_ENV === 'production' ? {} : err,
