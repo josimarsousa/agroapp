@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false, // Permanece NOT NULL
         references: {
-          model: 'products',
+          model: 'Products',
           key: 'id',
         },
         onUpdate: 'CASCADE',
@@ -29,7 +29,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true, // Permite NULL
         references: {
-          model: 'categories',
+          model: 'Categories',
           key: 'id',
         },
         onUpdate: 'CASCADE',
@@ -39,7 +39,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false, // Permanece NOT NULL
         references: {
-          model: 'users',
+          model: 'Users',
           key: 'id',
         },
         onUpdate: 'CASCADE',

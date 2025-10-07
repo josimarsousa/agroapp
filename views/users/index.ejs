@@ -83,7 +83,7 @@
                                                     <%= user.role === 'admin' ? 'Administrador' : 'Usuário' %>
                                                 </span>
                                             </td>
-                                            <td data-label="Criado Em" style="width: 180px; text-align: left;"><%= (function(d){ try { return (d && (d.toLocaleString ? d : new Date(d)).toLocaleString('pt-BR')); } catch(e) { return ''; } })(user.created_at) %></td>
+                                            <td data-label="Criado Em" style="width: 180px; text-align: left;"><%= user.created_at.toLocaleString('pt-BR') %></td>
                                             <td data-label="Ações" class="actions" style="width: 180px; text-align: left;">
                                                 <div class="d-flex gap-2">
                                                     <a href="/users/edit/<%= user.id %>" class="btn btn-primary btn-sm">

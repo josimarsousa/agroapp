@@ -14,7 +14,7 @@ const Harvest = sequelize.define('Harvest', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'products', // Nome da tabela no banco de dados
+            model: 'Products', // Nome da tabela no banco de dados
             key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -28,7 +28,7 @@ const Harvest = sequelize.define('Harvest', {
         type: DataTypes.INTEGER,
         allowNull: true, // A categoria pode ser opcional
         references: {
-            model: 'categories', // Nome da tabela no banco de dados
+            model: 'Categories', // Nome da tabela no banco de dados
             key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -38,7 +38,7 @@ const Harvest = sequelize.define('Harvest', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'users', // Nome da tabela no banco de dados
+            model: 'Users', // Nome da tabela no banco de dados
             key: 'id'
         },
         onUpdate: 'CASCADE',

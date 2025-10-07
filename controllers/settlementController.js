@@ -3,6 +3,7 @@ const { Sale, SaleItem, Loss, Product, Category, User, Customer } = require('../
 const { Op, Sequelize } = require('sequelize');
 const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
+const fs = require('fs');
 
 // Exibir filtros
 exports.settlementView = async (req, res) => {
@@ -225,9 +226,7 @@ exports.exportSettlementPDF = async (req, res) => {
         
         // Buscar perdas do período
         const losses = await Loss.findAll({
-            where: {
-                loss_date: whereClause.createdAt || {}
-            },
+            where: whereClause,
             include: [
                 {
                     model: Product,
@@ -409,47 +408,86 @@ exports.exportSettlementPDF = async (req, res) => {
         </html>
         `;
         
-        // Gerar PDF com Puppeteer (compatível com Vercel/Railway e fallback local)
-        const isLinux = process.platform === 'linux';
-        const customExecPath = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH;
-        let execPath;
-        if (customExecPath && customExecPath.trim()) {
-            execPath = customExecPath;
-        } else if (isLinux) {
-            execPath = await chromium.executablePath();
-            if (!execPath) {
-                const candidates = [
-                    '/usr/bin/chromium',
-                    '/usr/bin/chromium-browser',
-                    '/usr/bin/google-chrome',
-                    '/opt/google/chrome/chrome'
-                ];
-                execPath = candidates.find(p => require('fs').existsSync(p));
-            }
-        } else {
-            // Fallback para ambientes locais (macOS/Windows)
+        // Resolver executablePath com estratégia multiplataforma e validação
+        async function resolveExecutablePath() {
+            // 1) prioridade para variáveis de ambiente
+            const envPath = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH;
+             if (envPath) {
+                 try {
+                     await new Promise((resolve, reject) => {
+                         const { spawn } = require('child_process');
+                         const p = spawn(envPath, ['--version']);
+                         p.once('error', reject);
+                         p.once('close', code => code === 0 ? resolve() : reject(new Error('not executable')));
+                     });
+                     return envPath;
+                 } catch (e) {
+                     if (process.env.DEBUG_PDF === 'true') {
+                         console.warn('[PDF] Env executablePath inválido:', envPath, e.message);
+                     }
+                 }
+             }
+            // 2) macOS: tentar Google Chrome e Chromium do Homebrew
             if (process.platform === 'darwin') {
-                execPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-            } else if (process.platform === 'win32') {
-                execPath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+                const candidates = [
+                    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+                    '/Applications/Chromium.app/Contents/MacOS/Chromium',
+                    '/opt/homebrew/bin/chromium',
+                    '/usr/local/bin/chromium'
+                ];
+                for (const c of candidates) {
+                    try {
+                        await new Promise((resolve, reject) => {
+                            const { spawn } = require('child_process');
+                            const p = spawn(c, ['--version']);
+                            p.once('error', reject);
+                            p.once('close', code => code === 0 ? resolve() : reject(new Error('not executable')));
+                        });
+                        return c;
+                    } catch (_) { /* tenta próximo */ }
+                }
             }
+            // 3) Linux: deixar chromium.executablePath tentar resolver
+            try {
+                const p = await chromium.executablePath();
+                return p;
+            } catch (e) {
+                if (process.env.DEBUG_PDF === 'true') {
+                    console.warn('[PDF] Falha chromium.executablePath:', e.message);
+                }
+            }
+            // 4) último recurso: erro descritivo
+            throw new Error('Não foi possível resolver um executablePath válido para o Chrome/Chromium. Defina CHROME_EXECUTABLE_PATH.');
         }
-        if (!execPath) {
-            throw new Error('Caminho do executável do Chrome/Chromium não encontrado. Defina CHROME_EXECUTABLE_PATH.');
-        }
+
+        const resolvedExecutablePath = await resolveExecutablePath();
         if (process.env.DEBUG_PDF === 'true') {
-            console.log('Puppeteer executablePath:', execPath);
+            console.log('[PDF] executablePath:', resolvedExecutablePath);
         }
-        const launchArgs = isLinux ? [...chromium.args] : [];
-        launchArgs.push('--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage');
+ 
+        const usingEnvExecutable = Boolean(process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH);
+        const isMac = process.platform === 'darwin';
+        const launchArgs = (usingEnvExecutable || isMac)
+            ? ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+            : chromium.args;
+        const headlessMode = (usingEnvExecutable || isMac) ? 'new' : chromium.headless;
+ 
         const browser = await puppeteer.launch({
             args: launchArgs,
             defaultViewport: chromium.defaultViewport,
-            executablePath: execPath,
-            headless: (chromium.headless ?? true),
+            executablePath: resolvedExecutablePath,
+            headless: headlessMode,
         });
         const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        try {
+            await page.goto('about:blank', { waitUntil: 'domcontentloaded' });
+            await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        } catch (e) {
+            if (process.env.DEBUG_PDF === 'true') {
+                console.warn('[PDF] setContent falhou; fallback para data URL:', e.message);
+            }
+            await page.goto('data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent), { waitUntil: 'networkidle0' });
+        }
         
         const pdfBuffer = await page.pdf({
             format: 'A4',
@@ -470,10 +508,7 @@ exports.exportSettlementPDF = async (req, res) => {
         res.send(pdfBuffer);
         
     } catch (error) {
-        console.error('Erro ao gerar PDF:', error && error.stack ? error.stack : error);
-        if (process.env.DEBUG_PDF === 'true') {
-            return res.status(500).json({ error: 'Erro ao gerar PDF', detail: error.message || String(error) });
-        }
-        return res.status(500).json({ error: 'Erro ao gerar PDF' });
+        console.error('Erro ao gerar PDF:', error);
+        res.status(500).json({ error: 'Erro ao gerar PDF' });
     }
 };
