@@ -489,12 +489,12 @@ exports.exportSettlementPDF = async (req, res) => {
         doc.restore();
         doc.fillColor('#000000');
 
-        // Desenhar textos do cabeçalho com quebra controlada no último título
+        // Desenhar textos do cabeçalho com quebra controlada no último título (centralizado)
         currentX = startX;
         table.headers.forEach((header, i) => {
             const width = colWidths[i] - 5;
             const headerText = i === 5 ? 'Resultado\nLíquido' : header;
-            doc.text(headerText, currentX + 5, headerY + 3, { width, align: 'left' });
+            doc.text(headerText, currentX + 5, headerY + 3, { width, align: 'center' });
             currentX += colWidths[i];
         });
         
@@ -549,12 +549,12 @@ exports.exportSettlementPDF = async (req, res) => {
                 doc.restore();
                 doc.fillColor('#000000');
 
-                // Desenhar textos do cabeçalho com quebra controlada no último título
+                // Desenhar textos do cabeçalho com quebra controlada no último título (centralizado)
                 currentX = startX;
                 table.headers.forEach((header, i) => {
                     const width = colWidths[i] - 5;
                     const headerText = i === 5 ? 'Resultado\nLíquido' : header;
-                    doc.text(headerText, currentX + 5, headerY2 + 3, { width, align: 'left' });
+                    doc.text(headerText, currentX + 5, headerY2 + 3, { width, align: 'center' });
                     currentX += colWidths[i];
                 });
                 y = headerY2 + headerHeight2 + 8;
@@ -575,7 +575,7 @@ exports.exportSettlementPDF = async (req, res) => {
             row.forEach((cellText, i) => {
                 const width = colWidths[i];
                 const text = String(cellText);
-                const align = i === 0 ? 'left' : 'right'; // Produto à esquerda, números à direita
+                const align = 'center'; // todos ao centro para melhor visualização
                 doc.text(text, currentX + 5, y, { width: width - 10, align });
                 currentX += width;
             });
