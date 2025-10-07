@@ -456,31 +456,46 @@ exports.exportSettlementPDF = async (req, res) => {
 
         // Larguras proporcionais das colunas (6 colunas)
         const colWidths = [
-            tableWidth * 0.30, // Produto
+            tableWidth * 0.18, // Produto (ajustado conforme solicitação)
             tableWidth * 0.12, // Qtd. Vendida
-            tableWidth * 0.16, // Valor Vendas
+            tableWidth * 0.19, // Valor Vendas (aumentado para manter total 100%)
             tableWidth * 0.12, // Qtd. Perdida
-            tableWidth * 0.16, // Valor Perdas
-            tableWidth * 0.14  // Resultado Líquido
+            tableWidth * 0.19, // Valor Perdas (aumentado para manter total 100%)
+            tableWidth * 0.20  // Resultado Líquido (ajustado conforme solicitação)
         ];
         if (colWidths.some(isNaN) || colWidths.some(w => w <= 0)) {
             throw new Error('Erro crítico: Uma das larguras de coluna é NaN ou menor/igual a zero.');
         }
 
-        // Cabeçalho da tabela com fundo (padrão venda)
+        // Cabeçalho da tabela com fundo (padrão venda) com quebra controlada em "Resultado Líquido"
         const headerY = y;
-        doc.rect(doc.page.margins.left, headerY - 3, tableWidth, 18)
-           .fill('#f8f9fa')
-           .stroke('#dee2e6');
         
+        // Calcular altura dinâmica do cabeçalho considerando possível quebra 
         doc.fillColor('#000000').fontSize(9).font('Helvetica-Bold');
+        let headerHeight = 0;
         let currentX = startX;
         table.headers.forEach((header, i) => {
-            doc.text(header, currentX + 5, headerY + 3, { width: colWidths[i] - 5, align: 'left' });
+            const width = colWidths[i] - 5;
+            const headerText = i === 5 ? 'Resultado\nLíquido' : header;
+            const h = doc.heightOfString(headerText, { width });
+            headerHeight = Math.max(headerHeight, h);
+        });
+
+        // Fundo do cabeçalho com altura dinâmica
+        doc.rect(doc.page.margins.left, headerY - 3, tableWidth, headerHeight + 6)
+           .fill('#f8f9fa')
+           .stroke('#dee2e6');
+
+        // Desenhar textos do cabeçalho com quebra controlada no último título
+        currentX = startX;
+        table.headers.forEach((header, i) => {
+            const width = colWidths[i] - 5;
+            const headerText = i === 5 ? 'Resultado\nLíquido' : header;
+            doc.text(headerText, currentX + 5, headerY + 3, { width, align: 'left' });
             currentX += colWidths[i];
         });
         
-        y = headerY + 20;
+        y = headerY + headerHeight + 8;
         doc.y = y;
 
         // Corpo da tabela
