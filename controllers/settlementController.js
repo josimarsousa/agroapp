@@ -325,59 +325,244 @@ exports.exportSettlementPDF = async (req, res) => {
             profitMargin: salesData.totalAmount > 0 ? ((salesData.totalAmount - lossesData.totalValue) / salesData.totalAmount) * 100 : 0
         };
         
-        // === Geração de PDF com PDFKit (sem Chromium) ===
-        const doc = new PDFDocument({ size: 'A4', margin: 40 });
+        // === Geração de PDF com PDFKit (padrão dos demais relatórios) ===
+        const doc = new PDFDocument({ 
+            size: 'A4',
+            margin: 40,
+            info: {
+                Title: 'Relatório de Acerto',
+                Author: 'agroApp',
+                Subject: 'Relatório de Acerto',
+                Keywords: 'acerto, relatório, agroapp'
+            }
+        });
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=\"relatorio-acerto-${start_date}-${end_date}.pdf\"`);
+        res.setHeader('Content-Disposition', `inline; filename="relatorio_acerto_${Date.now()}.pdf"`);
         doc.pipe(res);
 
-        // Cabeçalho
-        doc.fontSize(18).font('Helvetica-Bold').text('Relatório de Acerto de Contas', { align: 'center' });
-        doc.moveDown(0.3);
-        doc.fontSize(11).font('Helvetica').text(`Período: ${new Date(start_date).toLocaleDateString('pt-BR')} a ${new Date(end_date).toLocaleDateString('pt-BR')}`, { align: 'center' });
-        doc.moveDown(1);
+        const startDateFormatted = new Date(start_date + 'T00:00:00').toLocaleDateString('pt-BR');
+        const endDateFormatted = new Date(end_date + 'T00:00:00').toLocaleDateString('pt-BR');
+        const periodText = `Período: ${startDateFormatted} até ${endDateFormatted}`;
 
-        // Resumo
-        doc.fontSize(12).font('Helvetica-Bold').text('Resumo');
-        doc.moveDown(0.2);
-        const resumo = [
-            [`Total de Vendas`, `R$ ${summary.totalSales.toFixed(2).replace('.', ',')}`],
-            [`Total de Perdas`, `R$ ${summary.totalLosses.toFixed(2).replace('.', ',')}`],
-            [`Resultado Líquido`, `R$ ${summary.netResult.toFixed(2).replace('.', ',')}`],
-            [`Margem de Lucro`, `${summary.profitMargin.toFixed(1).replace('.', ',')}%`]
-        ];
-        doc.fontSize(11).font('Helvetica');
-        resumo.forEach(([k, v]) => doc.text(`${k}: ${v}`));
-        doc.moveDown(0.8);
+        // === Cabeçalho no padrão do comprovante de venda ===
+        const pageWidth = doc.page.width;
+        const margin = doc.page.margins.left;
+        const contentWidth = pageWidth - (doc.page.margins.left + doc.page.margins.right);
+        let currentY = doc.page.margins.top;
 
-        // Título da tabela
-        doc.fontSize(12).font('Helvetica-Bold').text('Resumo Total por Produto');
-        doc.moveDown(0.4);
+        // Logo/Ícone da empresa (círculo com iniciais)
+        doc.circle(margin + 25, currentY + 25, 20)
+           .fillAndStroke('#4a7c59', '#2c5530')
+           .fontSize(14)
+           .font('Helvetica-Bold')
+           .fillColor('#ffffff')
+           .text('AG', margin + 18, currentY + 18);
 
-        // Cabeçalhos simples
-        doc.font('Helvetica-Bold').fontSize(10);
-        doc.text('Produto | Qtd. Vendida | Valor Vendas | Qtd. Perdida | Valor Perdas | Resultado Líquido');
-        doc.moveDown(0.2);
-        doc.font('Helvetica').fontSize(10);
+        // Nome da empresa e informações
+        doc.fillColor('#000000')
+           .fontSize(18)
+           .font('Helvetica-Bold')
+           .text('AGROAPP', margin + 60, currentY + 5);
+
+        doc.fontSize(10)
+           .font('Helvetica')
+           .fillColor('#666666')
+           .text('Sistema de Gestão Agrícola', margin + 60, currentY + 25)
+           .text('contato@agroapp.com | (37) 99961-3950', margin + 60, currentY + 40);
+
+        currentY += 80;
+
+        // Linha separadora
+        doc.moveTo(margin, currentY)
+           .lineTo(margin + contentWidth, currentY)
+           .stroke('#000000');
+
+        currentY += 15;
+
+        // Título do documento (compacto)
+        doc.fontSize(14)
+           .font('Helvetica-Bold')
+           .fillColor('#000000')
+           .text('RELATÓRIO DE ACERTO', margin, currentY, { align: 'center' });
+
+        // Período abaixo do título
+        doc.fontSize(9)
+           .font('Helvetica')
+           .fillColor('#333333')
+           .text(periodText, margin, currentY + 18, { align: 'center' });
+
+        // Posicionar cursor abaixo do cabeçalho
+        const afterHeaderY = currentY + 45;
+        doc.y = afterHeaderY;
+        doc.moveDown();
+
+        // === Caixa de resumo (padrão similar ao comprovante de venda) ===
+        const summaryBoxTop = doc.y;
+        doc.rect(margin, summaryBoxTop, contentWidth, 60)
+           .stroke('#cccccc')
+           .lineWidth(1);
+        const leftColX = margin + 15;
+        const rightColX = margin + (contentWidth / 2) + 10;
+
+        doc.fontSize(10)
+           .font('Helvetica-Bold')
+           .text('Totais do Período', leftColX, summaryBoxTop + 10);
+
+        doc.fontSize(8)
+           .font('Helvetica')
+           .text(`Vendas: R$ ${summary.totalSales.toFixed(2).replace('.', ',')}`, leftColX, summaryBoxTop + 25)
+           .text(`Perdas: R$ ${summary.totalLosses.toFixed(2).replace('.', ',')}`, leftColX, summaryBoxTop + 38);
+
+        doc.fontSize(10)
+           .font('Helvetica-Bold')
+           .text('Resultado', rightColX, summaryBoxTop + 10);
+
+        doc.fontSize(8)
+           .font('Helvetica')
+           .text(`Líquido: R$ ${summary.netResult.toFixed(2).replace('.', ',')}`, rightColX, summaryBoxTop + 25)
+           .text(`Margem: ${summary.profitMargin.toFixed(2).replace('.', ',')}%`, rightColX, summaryBoxTop + 38);
+
+        doc.y = summaryBoxTop + 75;
+
+        // Tabela com padrão visual consistente
+        const table = { headers: [], rows: [] };
+
+        table.headers = ['Produto', 'Qtd. Vendida', 'Valor Vendas', 'Qtd. Perdida', 'Valor Perdas', 'Resultado Líquido'];
 
         const productNames = Object.keys(productSummary);
         if (productNames.length === 0) {
-            doc.text('Nenhum dado encontrado para o período.');
+            table.rows.push(['Nenhum dado encontrado para o período.', '', '', '', '', '']);
         } else {
             productNames.forEach(productName => {
                 const p = productSummary[productName];
                 const net = p.salesAmount - p.lossValue;
-                const line = [
+                table.rows.push([
                     productName,
-                    p.salesQuantity.toFixed(2).replace('.', ','),
-                    `R$ ${p.salesAmount.toFixed(2).replace('.', ',')}`,
-                    p.lossQuantity.toFixed(2).replace('.', ','),
-                    `R$ ${p.lossValue.toFixed(2).replace('.', ',')}`,
+                    (p.salesQuantity || 0).toFixed(2).replace('.', ','),
+                    `R$ ${(p.salesAmount || 0).toFixed(2).replace('.', ',')}`,
+                    (p.lossQuantity || 0).toFixed(2).replace('.', ','),
+                    `R$ ${(p.lossValue || 0).toFixed(2).replace('.', ',')}`,
                     `R$ ${net.toFixed(2).replace('.', ',')}`
-                ].join(' | ');
-                doc.text(line);
+                ]);
             });
         }
+
+        let y = doc.y;
+        const startX = doc.x;
+        const tableWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+        if (isNaN(tableWidth) || tableWidth <= 0) {
+            throw new Error('Erro crítico: Largura da tabela inválida calculada: ' + tableWidth);
+        }
+
+        // Larguras proporcionais das colunas (6 colunas)
+        const colWidths = [
+            tableWidth * 0.30, // Produto
+            tableWidth * 0.12, // Qtd. Vendida
+            tableWidth * 0.16, // Valor Vendas
+            tableWidth * 0.12, // Qtd. Perdida
+            tableWidth * 0.16, // Valor Perdas
+            tableWidth * 0.14  // Resultado Líquido
+        ];
+        if (colWidths.some(isNaN) || colWidths.some(w => w <= 0)) {
+            throw new Error('Erro crítico: Uma das larguras de coluna é NaN ou menor/igual a zero.');
+        }
+
+        // Cabeçalho da tabela com fundo (padrão venda)
+        const headerY = y;
+        doc.rect(doc.page.margins.left, headerY - 3, tableWidth, 18)
+           .fill('#f8f9fa')
+           .stroke('#dee2e6');
+        
+        doc.fillColor('#000000').fontSize(9).font('Helvetica-Bold');
+        let currentX = startX;
+        table.headers.forEach((header, i) => {
+            doc.text(header, currentX + 5, headerY + 3, { width: colWidths[i] - 5, align: 'left' });
+            currentX += colWidths[i];
+        });
+        
+        y = headerY + 20;
+        doc.y = y;
+
+        // Corpo da tabela
+        const tableBodyFontSize = 8;
+        doc.fontSize(tableBodyFontSize).font('Helvetica');
+
+        table.rows.forEach((row, rowIndex) => {
+            let rowHeight = 0;
+
+            // Calcula a altura necessária para a linha
+            row.forEach((cellText, colIndex) => {
+                const width = colWidths[colIndex];
+                const text = String(cellText);
+                let textHeight = doc.heightOfString(text, { width });
+                if (typeof textHeight !== 'number' || isNaN(textHeight) || textHeight < 0) {
+                    textHeight = tableBodyFontSize * 1.2;
+                }
+                rowHeight = Math.max(rowHeight, textHeight);
+            });
+            if (typeof rowHeight !== 'number' || isNaN(rowHeight) || rowHeight <= 0) {
+                rowHeight = tableBodyFontSize * 1.5;
+            }
+
+            // Espaçamento vertical baseado na altura calculada
+            let calculatedMoveDownValue;
+            try {
+                calculatedMoveDownValue = rowHeight / tableBodyFontSize * 1.2;
+                if (isNaN(calculatedMoveDownValue) || calculatedMoveDownValue <= 0) {
+                    calculatedMoveDownValue = tableBodyFontSize * 1.5;
+                }
+            } catch (calcError) {
+                calculatedMoveDownValue = tableBodyFontSize * 1.5;
+            }
+
+            // Quebra de página se necessário
+            if (y + rowHeight + 10 > doc.page.height - doc.page.margins.bottom) {
+                doc.addPage();
+                y = doc.y;
+
+                // Redesenhar cabeçalho com fundo (padrão venda)
+                const headerY2 = y;
+                doc.rect(doc.page.margins.left, headerY2 - 3, tableWidth, 18)
+                   .fill('#f8f9fa')
+                   .stroke('#dee2e6');
+
+                doc.fillColor('#000000').fontSize(9).font('Helvetica-Bold');
+                currentX = startX;
+                table.headers.forEach((header, i) => {
+                    doc.text(header, currentX + 5, headerY2 + 3, { width: colWidths[i] - 5, align: 'left' });
+                    currentX += colWidths[i];
+                });
+                y = headerY2 + 20;
+                doc.y = y;
+                doc.fontSize(tableBodyFontSize).font('Helvetica');
+            }
+
+            // Linhas alternadas com fundo (padrão venda)
+            if (rowIndex % 2 === 0) {
+                doc.rect(doc.page.margins.left, y - 3, tableWidth, rowHeight + 6)
+                   .fill('#f8f9fa')
+                   .stroke();
+                doc.fillColor('#000000');
+            }
+
+            // Desenha a linha
+            currentX = startX;
+            row.forEach((cellText, i) => {
+                const width = colWidths[i];
+                const text = String(cellText);
+                doc.text(text, currentX + 5, y, { width: width - 5, align: 'left' });
+                currentX += width;
+            });
+            doc.moveDown(calculatedMoveDownValue);
+            y = doc.y;
+
+            // Linha separadora entre linhas
+            doc.lineWidth(0.2);
+            doc.strokeColor('#eeeeee');
+            doc.moveTo(doc.page.margins.left, y).lineTo(doc.page.width - doc.page.margins.right, y).stroke();
+            doc.moveDown(0.5);
+            y = doc.y;
+        });
 
         doc.end();
     } catch (error) {
