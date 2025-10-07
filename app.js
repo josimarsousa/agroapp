@@ -84,7 +84,8 @@ const corsOptions = {
       const allowedOrigins = process.env.CORS_ORIGIN
         ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean)
         : ['https://your-domain.com'];
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Permite requisições sem origin e com origin 'null' (file://, sandboxes)
+      if (!origin || origin === 'null' || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error('Não permitido pelo CORS'));
