@@ -483,9 +483,11 @@ exports.exportSettlementPDF = async (req, res) => {
         });
 
         // Fundo do cabeçalho com altura dinâmica
+        doc.save();
         doc.rect(doc.page.margins.left, headerY - 3, tableWidth, headerHeight + 6)
-           .fill('#f8f9fa')
-           .stroke('#dee2e6');
+           .fillAndStroke('#f8f9fa', '#dee2e6');
+        doc.restore();
+        doc.fillColor('#000000');
 
         // Desenhar textos do cabeçalho com quebra controlada no último título
         currentX = startX;
@@ -541,9 +543,11 @@ exports.exportSettlementPDF = async (req, res) => {
                 });
 
                 // Fundo do cabeçalho com altura dinâmica
+                doc.save();
                 doc.rect(doc.page.margins.left, headerY2 - 3, tableWidth, headerHeight2 + 6)
-                   .fill('#f8f9fa')
-                   .stroke('#dee2e6');
+                   .fillAndStroke('#f8f9fa', '#dee2e6');
+                doc.restore();
+                doc.fillColor('#000000');
 
                 // Desenhar textos do cabeçalho com quebra controlada no último título
                 currentX = startX;
