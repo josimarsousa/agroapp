@@ -1,5 +1,7 @@
 const fs = require('fs');
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 // Suporte a variáveis DB_* e MYSQL* (Railway)
 const DB_NAME = process.env.DB_NAME || process.env.MYSQLDATABASE || process.env.MYSQL_DB;

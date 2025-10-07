@@ -1,5 +1,7 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 // Suporte a variáveis DB_* (local) e MYSQL* (Railway)
 const DB_NAME = process.env.DB_NAME || process.env.MYSQLDATABASE || process.env.MYSQL_DB || 'agroapp';

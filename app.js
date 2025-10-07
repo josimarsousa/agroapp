@@ -5,7 +5,9 @@ const path = require('path');
 const methodOverride = require('method-override');
 const session = require('express-session');
 const flash = require('connect-flash');
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const compression = require('compression');
