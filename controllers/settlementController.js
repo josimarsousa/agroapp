@@ -448,7 +448,7 @@ exports.exportSettlementPDF = async (req, res) => {
         }
 
         let y = doc.y;
-        const startX = doc.x;
+        const startX = doc.page.margins.left;
         const tableWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
         if (isNaN(tableWidth) || tableWidth <= 0) {
             throw new Error('Erro crítico: Largura da tabela inválida calculada: ' + tableWidth);
