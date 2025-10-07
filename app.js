@@ -343,13 +343,17 @@ app.get(
             {
               model: Sale,
               as: 'sale',
+              attributes: [], // não selecionar colunas de Sale para evitar ONLY_FULL_GROUP_BY
               where: {
                 sale_date: {
                   [Op.between]: [startOfDay, endOfDay],
                 },
               },
+              required: true,
             },
           ],
+          // garantir que nada além do aggregate seja selecionado
+          attributes: [],
         }),
         Customer.count(),
       ]);
