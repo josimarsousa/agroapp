@@ -1,8 +1,7 @@
 // controllers/settlementController.js
 const { Sale, SaleItem, Loss, Product, Category, User, Customer } = require('../models');
 const { Op, Sequelize } = require('sequelize');
-const chromium = require('@sparticuz/chromium');
-const puppeteer = require('puppeteer-core');
+const PDFDocument = require('pdfkit');
 const fs = require('fs');
 
 // Exibir filtros
@@ -326,187 +325,61 @@ exports.exportSettlementPDF = async (req, res) => {
             profitMargin: salesData.totalAmount > 0 ? ((salesData.totalAmount - lossesData.totalValue) / salesData.totalAmount) * 100 : 0
         };
         
-        // Gerar HTML para o PDF
-        const htmlContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Relatório de Acerto - ${start_date} a ${end_date}</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                .header { text-align: center; margin-bottom: 30px; }
-                .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px; }
-                .summary-item { padding: 15px; border: 1px solid #ddd; border-radius: 5px; text-align: center; }
-                .summary-item.positive { background-color: #d4edda; border-color: #c3e6cb; }
-                .summary-item.negative { background-color: #f8d7da; border-color: #f5c6cb; }
-                .summary-item h3 { margin: 0 0 10px 0; font-size: 14px; color: #666; }
-                .summary-item .value { font-size: 24px; font-weight: bold; margin: 0; }
-                table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
-                th { background-color: #f8f9fa; font-weight: bold; }
-                .section-title { font-size: 18px; font-weight: bold; margin: 30px 0 15px 0; }
-                .period { text-align: center; color: #666; margin-bottom: 20px; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>Relatório de Acerto de Contas</h1>
-                <div class="period">Período: ${new Date(start_date).toLocaleDateString('pt-BR')} a ${new Date(end_date).toLocaleDateString('pt-BR')}</div>
-            </div>
-            
-            <div class="summary-grid">
-                <div class="summary-item">
-                    <h3>Total de Vendas</h3>
-                    <p class="value">R$ ${summary.totalSales.toFixed(2).replace('.', ',')}</p>
-                </div>
-                <div class="summary-item">
-                    <h3>Total de Perdas</h3>
-                    <p class="value">R$ ${summary.totalLosses.toFixed(2).replace('.', ',')}</p>
-                </div>
-                <div class="summary-item ${summary.netResult >= 0 ? 'positive' : 'negative'}">
-                    <h3>Resultado Líquido</h3>
-                    <p class="value">R$ ${summary.netResult.toFixed(2).replace('.', ',')}</p>
-                </div>
-                <div class="summary-item ${summary.profitMargin >= 0 ? 'positive' : 'negative'}">
-                    <h3>Margem de Lucro</h3>
-                    <p class="value">${summary.profitMargin.toFixed(1).replace('.', ',')}%</p>
-                </div>
-            </div>
-            
-            <div class="section-title">Resumo Total por Produto</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th>Qtd. Vendida</th>
-                        <th>Valor Vendas</th>
-                        <th>Qtd. Perdida</th>
-                        <th>Valor Perdas</th>
-                        <th>Resultado Líquido</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${Object.keys(productSummary).map(productName => {
-                        const product = productSummary[productName];
-                        const netResult = product.salesAmount - product.lossValue;
-                        return `
-                        <tr>
-                            <td>${productName}</td>
-                            <td>${product.salesQuantity.toFixed(2).replace('.', ',')}</td>
-                            <td>R$ ${product.salesAmount.toFixed(2).replace('.', ',')}</td>
-                            <td>${product.lossQuantity.toFixed(2).replace('.', ',')}</td>
-                            <td>R$ ${product.lossValue.toFixed(2).replace('.', ',')}</td>
-                            <td style="color: ${netResult >= 0 ? 'green' : 'red'}; font-weight: bold;">
-                                R$ ${netResult.toFixed(2).replace('.', ',')}
-                            </td>
-                        </tr>`;
-                    }).join('')}
-                </tbody>
-            </table>
-        </body>
-        </html>
-        `;
-        
-        // Resolver executablePath com estratégia multiplataforma e validação
-        async function resolveExecutablePath() {
-            // 1) prioridade para variáveis de ambiente
-            const envPath = process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH;
-             if (envPath) {
-                 try {
-                     await new Promise((resolve, reject) => {
-                         const { spawn } = require('child_process');
-                         const p = spawn(envPath, ['--version']);
-                         p.once('error', reject);
-                         p.once('close', code => code === 0 ? resolve() : reject(new Error('not executable')));
-                     });
-                     return envPath;
-                 } catch (e) {
-                     if (process.env.DEBUG_PDF === 'true') {
-                         console.warn('[PDF] Env executablePath inválido:', envPath, e.message);
-                     }
-                 }
-             }
-            // 2) macOS: tentar Google Chrome e Chromium do Homebrew
-            if (process.platform === 'darwin') {
-                const candidates = [
-                    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-                    '/Applications/Chromium.app/Contents/MacOS/Chromium',
-                    '/opt/homebrew/bin/chromium',
-                    '/usr/local/bin/chromium'
-                ];
-                for (const c of candidates) {
-                    try {
-                        await new Promise((resolve, reject) => {
-                            const { spawn } = require('child_process');
-                            const p = spawn(c, ['--version']);
-                            p.once('error', reject);
-                            p.once('close', code => code === 0 ? resolve() : reject(new Error('not executable')));
-                        });
-                        return c;
-                    } catch (_) { /* tenta próximo */ }
-                }
-            }
-            // 3) Linux: deixar chromium.executablePath tentar resolver
-            try {
-                const p = await chromium.executablePath();
-                return p;
-            } catch (e) {
-                if (process.env.DEBUG_PDF === 'true') {
-                    console.warn('[PDF] Falha chromium.executablePath:', e.message);
-                }
-            }
-            // 4) último recurso: erro descritivo
-            throw new Error('Não foi possível resolver um executablePath válido para o Chrome/Chromium. Defina CHROME_EXECUTABLE_PATH.');
+        // === Geração de PDF com PDFKit (sem Chromium) ===
+        const doc = new PDFDocument({ size: 'A4', margin: 40 });
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=\"relatorio-acerto-${start_date}-${end_date}.pdf\"`);
+        doc.pipe(res);
+
+        // Cabeçalho
+        doc.fontSize(18).font('Helvetica-Bold').text('Relatório de Acerto de Contas', { align: 'center' });
+        doc.moveDown(0.3);
+        doc.fontSize(11).font('Helvetica').text(`Período: ${new Date(start_date).toLocaleDateString('pt-BR')} a ${new Date(end_date).toLocaleDateString('pt-BR')}`, { align: 'center' });
+        doc.moveDown(1);
+
+        // Resumo
+        doc.fontSize(12).font('Helvetica-Bold').text('Resumo');
+        doc.moveDown(0.2);
+        const resumo = [
+            [`Total de Vendas`, `R$ ${summary.totalSales.toFixed(2).replace('.', ',')}`],
+            [`Total de Perdas`, `R$ ${summary.totalLosses.toFixed(2).replace('.', ',')}`],
+            [`Resultado Líquido`, `R$ ${summary.netResult.toFixed(2).replace('.', ',')}`],
+            [`Margem de Lucro`, `${summary.profitMargin.toFixed(1).replace('.', ',')}%`]
+        ];
+        doc.fontSize(11).font('Helvetica');
+        resumo.forEach(([k, v]) => doc.text(`${k}: ${v}`));
+        doc.moveDown(0.8);
+
+        // Título da tabela
+        doc.fontSize(12).font('Helvetica-Bold').text('Resumo Total por Produto');
+        doc.moveDown(0.4);
+
+        // Cabeçalhos simples
+        doc.font('Helvetica-Bold').fontSize(10);
+        doc.text('Produto | Qtd. Vendida | Valor Vendas | Qtd. Perdida | Valor Perdas | Resultado Líquido');
+        doc.moveDown(0.2);
+        doc.font('Helvetica').fontSize(10);
+
+        const productNames = Object.keys(productSummary);
+        if (productNames.length === 0) {
+            doc.text('Nenhum dado encontrado para o período.');
+        } else {
+            productNames.forEach(productName => {
+                const p = productSummary[productName];
+                const net = p.salesAmount - p.lossValue;
+                const line = [
+                    productName,
+                    p.salesQuantity.toFixed(2).replace('.', ','),
+                    `R$ ${p.salesAmount.toFixed(2).replace('.', ',')}`,
+                    p.lossQuantity.toFixed(2).replace('.', ','),
+                    `R$ ${p.lossValue.toFixed(2).replace('.', ',')}`,
+                    `R$ ${net.toFixed(2).replace('.', ',')}`
+                ].join(' | ');
+                doc.text(line);
+            });
         }
 
-        const resolvedExecutablePath = await resolveExecutablePath();
-        if (process.env.DEBUG_PDF === 'true') {
-            console.log('[PDF] executablePath:', resolvedExecutablePath);
-        }
- 
-        const usingEnvExecutable = Boolean(process.env.CHROME_EXECUTABLE_PATH || process.env.PUPPETEER_EXECUTABLE_PATH);
-        const isMac = process.platform === 'darwin';
-        const launchArgs = (usingEnvExecutable || isMac)
-            ? ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-            : chromium.args;
-        const headlessMode = (usingEnvExecutable || isMac) ? 'new' : chromium.headless;
- 
-        const browser = await puppeteer.launch({
-            args: launchArgs,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: resolvedExecutablePath,
-            headless: headlessMode,
-        });
-        const page = await browser.newPage();
-        try {
-            await page.goto('about:blank', { waitUntil: 'domcontentloaded' });
-            await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        } catch (e) {
-            if (process.env.DEBUG_PDF === 'true') {
-                console.warn('[PDF] setContent falhou; fallback para data URL:', e.message);
-            }
-            await page.goto('data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent), { waitUntil: 'networkidle0' });
-        }
-        
-        const pdfBuffer = await page.pdf({
-            format: 'A4',
-            printBackground: true,
-            margin: {
-                top: '20px',
-                right: '20px',
-                bottom: '20px',
-                left: '20px'
-            }
-        });
-        
-        await browser.close();
-        
-        // Enviar PDF como resposta
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="relatorio-acerto-${start_date}-${end_date}.pdf"`);
-        res.send(pdfBuffer);
-        
+        doc.end();
     } catch (error) {
         console.error('Erro ao gerar PDF:', error);
         res.status(500).json({ error: 'Erro ao gerar PDF' });
