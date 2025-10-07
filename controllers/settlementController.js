@@ -494,7 +494,7 @@ exports.exportSettlementPDF = async (req, res) => {
             row.forEach((cellText, colIndex) => {
                 const width = colWidths[colIndex];
                 const text = String(cellText);
-                let textHeight = doc.heightOfString(text, { width });
+                let textHeight = doc.heightOfString(text, { width: width - 10 });
                 if (typeof textHeight !== 'number' || isNaN(textHeight) || textHeight < 0) {
                     textHeight = tableBodyFontSize * 1.2;
                 }
@@ -502,17 +502,6 @@ exports.exportSettlementPDF = async (req, res) => {
             });
             if (typeof rowHeight !== 'number' || isNaN(rowHeight) || rowHeight <= 0) {
                 rowHeight = tableBodyFontSize * 1.5;
-            }
-
-            // Espaçamento vertical baseado na altura calculada
-            let calculatedMoveDownValue;
-            try {
-                calculatedMoveDownValue = rowHeight / tableBodyFontSize * 1.2;
-                if (isNaN(calculatedMoveDownValue) || calculatedMoveDownValue <= 0) {
-                    calculatedMoveDownValue = tableBodyFontSize * 1.5;
-                }
-            } catch (calcError) {
-                calculatedMoveDownValue = tableBodyFontSize * 1.5;
             }
 
             // Quebra de página se necessário
@@ -550,18 +539,21 @@ exports.exportSettlementPDF = async (req, res) => {
             row.forEach((cellText, i) => {
                 const width = colWidths[i];
                 const text = String(cellText);
-                doc.text(text, currentX + 5, y, { width: width - 5, align: 'left' });
+                const align = i === 0 ? 'left' : 'right'; // Produto à esquerda, números à direita
+                doc.text(text, currentX + 5, y, { width: width - 10, align });
                 currentX += width;
             });
-            doc.moveDown(calculatedMoveDownValue);
-            y = doc.y;
+
+            // Avança verticalmente com base na altura calculada da linha
+            y += rowHeight + 6;
+            doc.y = y;
 
             // Linha separadora entre linhas
             doc.lineWidth(0.2);
             doc.strokeColor('#eeeeee');
             doc.moveTo(doc.page.margins.left, y).lineTo(doc.page.width - doc.page.margins.right, y).stroke();
-            doc.moveDown(0.5);
-            y = doc.y;
+            y += 4;
+            doc.y = y;
         });
 
         doc.end();
