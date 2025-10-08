@@ -26,7 +26,9 @@
             <% if (isAuthenticated) { %>
                 <!-- Primary Navigation -->
                 <div class="nav-section">
-                    <!-- Gestão Dropdown -->
+
+                    <!-- Gestão Dropdown (somente admin/manager) -->
+                    <% if (user && (user.role === 'admin' || user.role === 'manager')) { %>
                     <div class="nav-dropdown">
                         <button class="nav-dropdown-toggle">
                             Gestão
@@ -41,6 +43,7 @@
                             <a href="/categories" class="nav-dropdown-item">Categorias</a>
                         </div>
                     </div>
+                    <% } %>
 
                     <!-- Operações Dropdown -->
                     <div class="nav-dropdown">
@@ -51,12 +54,14 @@
                             </svg>
                         </button>
                         <div class="nav-dropdown-menu">
-                            <a href="/sales/pdv" class="nav-dropdown-item nav-highlight">Vendas PDV</a>
-                            <a href="/sales" class="nav-dropdown-item">Historico de vendas</a>
+                            <% if (user && (user.role === 'admin' || user.role === 'manager')) { %>
+                                <a href="/sales/pdv" class="nav-dropdown-item nav-highlight">Vendas PDV</a>
+                                <a href="/sales" class="nav-dropdown-item">Historico de vendas</a>
+                                <a href="/losses/new" class="nav-dropdown-item">Nova Perda</a>
+                                <a href="/losses" class="nav-dropdown-item">Perdas</a>
+                            <% } %>
                             <a href="/harvests/new" class="nav-dropdown-item">Nova Colheita</a>
                             <a href="/harvests" class="nav-dropdown-item">Colheitas</a>
-                            <a href="/losses/new" class="nav-dropdown-item">Nova Perda</a>
-                            <a href="/losses" class="nav-dropdown-item">Perdas</a>
                         </div>
                     </div>
 

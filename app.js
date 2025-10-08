@@ -163,7 +163,7 @@ app.use(
 app.use(cookieParser());
 
 // DB connect and sync
-const { sequelize, connectDB, Sale, SaleItem, Customer, User } = require('./models');
+const { sequelize, connectDB, Sale, SaleItem, Customer, User, Harvest, Product, Category } = require('./models');
 // Conecta ao banco para falhar cedo se houver problema
 if (connectDB && typeof connectDB === 'function') {
   connectDB();
@@ -282,7 +282,7 @@ app.use('/customers', apiLimiter, customerRoutes);
 app.use('/categories', apiLimiter, categoryRoutes);
 app.use('/sales', authMiddleware, apiLimiter, salesRoutes);
 app.use('/sales/reports', authMiddleware, authorizeRole(['admin', 'manager']));
-app.use('/', authMiddleware, authorizeRole(['admin', 'manager']), harvestRoutes);
+app.use('/', authMiddleware, harvestRoutes);
 app.use('/losses', lossRoutes);
 app.use('/settlement', authMiddleware, settlementRoutes);
 
@@ -328,48 +328,73 @@ app.get(
 app.get(
   '/dashboard',
   authMiddleware,
-  authorizeRole(['admin', 'manager']),
   async (req, res) => {
     try {
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date();
-      endOfDay.setHours(23, 59, 59, 999);
+      // Se for admin/manager, mantém o dashboard atual com métricas de vendas
+      if (req.user && (req.user.role === 'admin' || req.user.role === 'manager')) {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
 
-      const [lastSale, salesToday, totalProducts, totalCustomers] = await Promise.all([
-        Sale.findOne({
-          order: [['sale_date', 'DESC']],
-          include: [
-            { model: Customer, as: 'customer' },
-            { model: User, as: 'user' },
-          ],
-        }),
-        Sale.count({
-          where: {
-            sale_date: {
-              [Op.between]: [startOfDay, endOfDay],
-            },
-          },
-        }),
-        SaleItem.sum('quantity', {
-          include: [
-            {
-              model: Sale,
-              as: 'sale',
-              attributes: [], // não selecionar colunas de Sale para evitar ONLY_FULL_GROUP_BY
-              where: {
-                sale_date: {
-                  [Op.between]: [startOfDay, endOfDay],
-                },
+        const [lastSale, salesToday, totalProducts, totalCustomers] = await Promise.all([
+          Sale.findOne({
+            order: [['sale_date', 'DESC']],
+            include: [
+              { model: Customer, as: 'customer' },
+              { model: User, as: 'user' },
+            ],
+          }),
+          Sale.count({
+            where: {
+              sale_date: {
+                [Op.between]: [startOfDay, endOfDay],
               },
-              required: true,
             },
-          ],
-          // garantir que nada além do aggregate seja selecionado
-          attributes: [],
-        }),
-        Customer.count(),
-      ]);
+          }),
+          SaleItem.sum('quantity', {
+            include: [
+              {
+                model: Sale,
+                as: 'sale',
+                attributes: [],
+                where: {
+                  sale_date: {
+                    [Op.between]: [startOfDay, endOfDay],
+                  },
+                },
+                required: true,
+              },
+            ],
+            attributes: [],
+          }),
+          Customer.count(),
+        ]);
+
+        return res.render('dashboard', {
+          title: 'Dashboard',
+          isAuthenticated: res.locals.isAuthenticated,
+          user: res.locals.user,
+          successMessage: res.locals.successMessage,
+          errorMessage: res.locals.errorMessage,
+          lastSale: lastSale || null,
+          salesToday: salesToday || 0,
+          totalProducts: totalProducts || 0,
+          totalCustomers: totalCustomers || 0,
+          latestHarvests: [],
+        });
+      }
+
+      // Se for usuário comum, carregar últimas colheitas do próprio usuário
+      const latestHarvests = await Harvest.findAll({
+        where: { user_id: req.user.id },
+        order: [['harvest_date', 'DESC']],
+        limit: 5,
+        include: [
+          { model: Product, as: 'product' },
+          { model: Category, as: 'category' },
+        ],
+      });
 
       return res.render('dashboard', {
         title: 'Dashboard',
@@ -377,10 +402,7 @@ app.get(
         user: res.locals.user,
         successMessage: res.locals.successMessage,
         errorMessage: res.locals.errorMessage,
-        lastSale: lastSale || null,
-        salesToday: salesToday || 0,
-        totalProducts: totalProducts || 0,
-        totalCustomers: totalCustomers || 0,
+        latestHarvests: latestHarvests || [],
       });
     } catch (error) {
       console.error('Erro ao carregar o dashboard:', error);

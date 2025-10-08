@@ -47,6 +47,7 @@
                     </div>
                 </div>
                 
+                <% if (user.role === 'admin' || user.role === 'manager') { %>
                 <!-- Cards do Dashboard -->
                 <div class="d-flex gap-4 mb-4" style="flex-wrap: wrap;">
                     <!-- Card da Última Venda -->
@@ -126,6 +127,58 @@
                         </div>
                     </div>
                 </div>
+                <% } else { %>
+                <!-- Seção de Últimas Colheitas para usuário comum -->
+                <div class="card slide-in" style="flex: 1; min-width: 300px;">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="header-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 3L19 3C20.1 3 21 3.9 21 5L21 19C21 20.1 20.1 21 19 21L5 21C3.9 21 3 20.1 3 19L3 5C3 3.9 3.9 3 5 3ZM7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H13V17H7V15Z" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="mb-0">Últimas Colheitas</h3>
+                                <p class="mb-0" style="font-size: 0.875rem; color: var(--text-secondary);">As 5 colheitas mais recentes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (latestHarvests && latestHarvests.length > 0) { %>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Produto</th>
+                                            <th>Categoria</th>
+                                            <th>Quantidade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% latestHarvests.forEach(function(h) { %>
+                                            <tr>
+                                                <td><%= new Date(h.harvest_date).toLocaleDateString('pt-BR') %></td>
+                                                <td><%= h.product ? h.product.name : '—' %></td>
+                                                <td><%= h.category ? h.category.name : '—' %></td>
+                                                <td><%= Number(h.quantity).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info">
+                                <p class="mb-0">Você ainda não possui colheitas registradas.</p>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end gap-2">
+                        <a href="/harvests/new" class="btn btn-primary">Nova Colheita</a>
+                        <a href="/harvests" class="btn btn-outline">Ver todas</a>
+                    </div>
+                </div>
+                <% } %>
                 
             <% } else { %>
                 <div class="card fade-in">
