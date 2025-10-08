@@ -21,8 +21,8 @@
   "license": "ISC",
   "description": "Sistema de gestão agrícola para controle de colheitas, vendas e perdas",
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
+    "node": "18.x",
+    "npm": ">=9.0.0"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
