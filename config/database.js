@@ -1,38 +1,20 @@
 const { Sequelize } = require('sequelize');
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-
-// Suporte a variáveis DB_* (local) e MYSQL* (Railway)
-const DB_NAME = process.env.DB_NAME || process.env.MYSQLDATABASE || process.env.MYSQL_DB || 'agroapp';
-const DB_USER = process.env.DB_USER || process.env.MYSQLUSER || process.env.MYSQL_USER || 'root';
-const DB_PASSWORD = process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || '';
-const DB_HOST = process.env.DB_HOST || process.env.MYSQLHOST || process.env.MYSQL_HOST || '127.0.0.1';
-const DB_PORT = parseInt(process.env.DB_PORT || process.env.MYSQLPORT || process.env.MYSQL_PORT || '3306', 10);
+require('dotenv').config();
 
 const sequelize = new Sequelize(
-    DB_NAME,
-    DB_USER,
-    DB_PASSWORD,
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
     {
-        host: DB_HOST,
-        port: DB_PORT,
+        host: process.env.DB_HOST,
         dialect: 'mysql',
-        logging: process.env.SEQUELIZE_LOGGING === 'true' ? console.log : false,
+        logging: false, // Desabilita o log de queries no console
         pool: {
             max: 5,
             min: 0,
             acquire: 30000,
             idle: 10000
-        },
-        ...(process.env.MYSQL_SSL === 'true' ? {
-            dialectOptions: {
-                ssl: {
-                    require: true,
-                    rejectUnauthorized: false
-                }
-            }
-        } : {})
+        }
     }
 );
 

@@ -3,276 +3,250 @@ const rateLimit = require('express-rate-limit');
 const express = require('express');
 const path = require('path');
 const methodOverride = require('method-override');
-const session = require('express-session');
-const flash = require('connect-flash');
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+const session = require('express-session'); // Importa express-session
+const flash = require('connect-flash');     // Importa connect-flash
+require('dotenv').config(); // Garante que as variáveis de ambiente sejam carregadas
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const compression = require('compression');
-const slowDown = require('express-slow-down');
+const compression = require('compression'); // Para compressão gzip
+const slowDown = require('express-slow-down'); // Para slow down de requisições
+
 const helmet = require('helmet');
-const { Op } = require('sequelize');
 
 const { authMiddleware, authorizeRole } = require('./middleware/authMiddleware');
 
 const app = express();
 
-// Proxies como Railway/Ngrok
+// Configuração para funcionar com proxies como ngrok
 app.set('trust proxy', 1);
 
-// Diagnóstico de CORS (apenas em produção)
-if (process.env.NODE_ENV === 'production') {
-  app.use((req, res, next) => {
-    if (process.env.DEBUG_CORS === 'true') {
-      console.log('[CORS] Origin:', req.headers.origin);
-    }
-    next();
-  });
-}
-
-// Compressão
-app.use(
-  compression({
-    level: process.env.NODE_ENV === 'production' ? 6 : 1,
-    threshold: 1024,
+// Middleware de compressão (deve vir antes de outros middlewares)
+app.use(compression({
+    level: process.env.NODE_ENV === 'production' ? 6 : 1, // Nível de compressão mais alto em produção
+    threshold: 1024, // Só comprime arquivos maiores que 1KB
     filter: (req, res) => {
-      if (req.headers['x-no-compression']) return false;
-      return compression.filter(req, res);
-    },
-  })
-);
+        // Não comprime se o cliente não suporta
+        if (req.headers['x-no-compression']) {
+            return false;
+        }
+        // Usa o filtro padrão do compression
+        return compression.filter(req, res);
+    }
+}));
 
-// Permitir qualquer host para funcionar com ngrok/dev
+// Middleware para aceitar qualquer host (necessário para ngrok)
 app.use((req, res, next) => {
-  req.headers.host = req.headers.host || 'localhost:3001';
-  next();
+    // Permite qualquer host para funcionar com ngrok
+    req.headers.host = req.headers.host || 'localhost:3001';
+    next();
 });
 
-// Rate limits
+// Rate limiting configurável por ambiente
 const authLimiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 5,
-  message:
-    'Muitas tentativas de login/registro a partir deste IP, por favor aguarde!',
-  standardHeaders: true,
-  legacyHeaders: false,
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 5,
+    message: 'Muitas tentativas de login/registro a partir deste IP, por favor aguarde!',
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
 const apiLimiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
-  message: 'Muitas requisições a partir deste IP, por favor aguarde!',
-  standardHeaders: true,
-  legacyHeaders: false,
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
+    message: 'Muitas requisições a partir deste IP, por favor aguarde!',
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
-// Slow down
+// Slow down middleware para reduzir velocidade após muitas requisições
 const speedLimiter = slowDown({
-  windowMs: 15 * 60 * 1000,
-  delayAfter: 50,
-  delayMs: () => 500,
-  maxDelayMs: 20000,
-  skipFailedRequests: false,
-  skipSuccessfulRequests: false,
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    delayAfter: 50, // Permite 50 requisições por janela sem delay
+    delayMs: () => 500, // Adiciona 500ms de delay constante após o limite (v2+)
+    maxDelayMs: 20000, // Delay máximo de 20 segundos
+    skipFailedRequests: false,
+    skipSuccessfulRequests: false,
 });
 
-// CORS
+// Configuração CORS baseada no ambiente
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (process.env.NODE_ENV === 'production') {
-      const allowedOrigins = process.env.CORS_ORIGIN
-        ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean)
-        : ['https://your-domain.com'];
-      // Permite requisições sem origin e com origin 'null' (file://, sandboxes)
-      if (!origin || origin === 'null' || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Não permitido pelo CORS'));
-      }
-    } else {
-      const allowedOrigins = [
-        'http://localhost:3001',
-        'http://127.0.0.1:3001',
-        /https:\/\/.*\.ngrok\.io$/,
-        /https:\/\/.*\.ngrok-free\.app$/,
-      ];
-      if (
-        !origin ||
-        allowedOrigins.some((allowed) =>
-          typeof allowed === 'string' ? allowed === origin : allowed.test(origin)
-        )
-      ) {
-        callback(null, true);
-      } else {
-        callback(null, true);
-      }
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    origin: function (origin, callback) {
+        if (process.env.NODE_ENV === 'production') {
+            // Em produção, usar apenas origens específicas
+            const allowedOrigins = process.env.CORS_ORIGIN ? 
+                process.env.CORS_ORIGIN.split(',') : 
+                ['https://your-domain.com'];
+            
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Não permitido pelo CORS'));
+            }
+        } else {
+            // Em desenvolvimento, permite localhost e ngrok
+            const allowedOrigins = [
+                'http://localhost:3001',
+                'http://127.0.0.1:3001',
+                /https:\/\/.*\.ngrok\.io$/,
+                /https:\/\/.*\.ngrok-free\.app$/
+            ];
+            
+            if (!origin || allowedOrigins.some(allowed => 
+                typeof allowed === 'string' ? allowed === origin : allowed.test(origin)
+            )) {
+                callback(null, true);
+            } else {
+                callback(null, true); // Permite todos em desenvolvimento
+            }
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
-
-// Definir locals padrão cedo para evitar undefined em views de erro
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = false;
-  res.locals.user = null;
-  next();
-});
 
 app.use(cors(corsOptions));
 
-// CSP
+// Configuração CSP baseada no ambiente
 const cspDirectives = {
-  defaultSrc: ["'self'"],
-  scriptSrc: process.env.CSP_SCRIPT_SRC
-    ? process.env.CSP_SCRIPT_SRC.split(',').map((src) => src.trim())
-    : ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
-  styleSrc: process.env.CSP_STYLE_SRC
-    ? process.env.CSP_STYLE_SRC.split(',').map((src) => src.trim())
-    : ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
-  connectSrc: process.env.CSP_CONNECT_SRC
-    ? process.env.CSP_CONNECT_SRC.split(',').map((src) => src.trim())
-    : ["'self'", 'https://cdn.jsdelivr.net'],
-  imgSrc: process.env.CSP_IMG_SRC
-    ? process.env.CSP_IMG_SRC.split(',').map((src) => src.trim())
-    : ["'self'", 'data:', 'https:'],
-  fontSrc: process.env.CSP_FONT_SRC
-    ? process.env.CSP_FONT_SRC.split(',').map((src) => src.trim())
-    : ["'self'", 'https://cdn.jsdelivr.net'],
+    defaultSrc: ["'self'"],
+    scriptSrc: process.env.CSP_SCRIPT_SRC ? 
+        process.env.CSP_SCRIPT_SRC.split(',').map(src => src.trim()) : 
+        ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+    styleSrc: process.env.CSP_STYLE_SRC ? 
+        process.env.CSP_STYLE_SRC.split(',').map(src => src.trim()) : 
+        ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+    connectSrc: process.env.CSP_CONNECT_SRC ? 
+        process.env.CSP_CONNECT_SRC.split(',').map(src => src.trim()) : 
+        ["'self'", "https://cdn.jsdelivr.net"],
+    imgSrc: process.env.CSP_IMG_SRC ? 
+        process.env.CSP_IMG_SRC.split(',').map(src => src.trim()) : 
+        ["'self'", "data:", "https:"],
+    fontSrc: process.env.CSP_FONT_SRC ? 
+        process.env.CSP_FONT_SRC.split(',').map(src => src.trim()) : 
+        ["'self'", "https://cdn.jsdelivr.net"]
 };
 
+// Em desenvolvimento, adiciona ngrok aos CSP
 if (process.env.NODE_ENV !== 'production') {
-  Object.keys(cspDirectives).forEach((key) => {
-    if (Array.isArray(cspDirectives[key])) {
-      cspDirectives[key].push('*.ngrok.io', '*.ngrok-free.app');
-    }
-  });
+    Object.keys(cspDirectives).forEach(key => {
+        if (Array.isArray(cspDirectives[key])) {
+            cspDirectives[key].push("*.ngrok.io", "*.ngrok-free.app");
+        }
+    });
 }
 
-app.use(
-  helmet({
+app.use(helmet({
     contentSecurityPolicy: {
-      directives: cspDirectives,
-    },
-  })
-);
+        directives: cspDirectives
+    }
+}));
 
 app.use(cookieParser());
 
-// DB connect and sync
-const { sequelize, connectDB, Sale, SaleItem, Customer, User } = require('./models');
-// Conecta ao banco para falhar cedo se houver problema
-if (connectDB && typeof connectDB === 'function') {
-  connectDB();
-}
-// Sync só em dev por padrão
+// Sincroniza os modelos com o banco de dados (certifique-se de que isso esteja acontecendo)
+const { sequelize } = require('./models');
 if (process.env.NODE_ENV !== 'production') {
-  sequelize.sync().catch((err) =>
-    console.error('Erro ao sincronizar banco de dados:', err)
-  );
-}
-// Em produção, permitir sincronização opcional via env
-if (process.env.NODE_ENV === 'production' && process.env.ENABLE_DB_SYNC === 'true') {
-  const alter = process.env.DB_SYNC_ALTER === 'true';
-  sequelize
-    .sync({ alter })
-    .then(() => console.log('Sincronização de modelos em produção concluída.'))
-    .catch((err) => console.error('Erro ao sincronizar modelos em produção:', err));
+    sequelize.sync()
+        .catch(err => console.error('Erro ao sincronizar banco de dados:', err));
 }
 
-// View engine
+// Configuração do View Engine (EJS)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Middlewares
-app.use(speedLimiter);
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(
-  express.static(path.join(__dirname, 'public'), {
-    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
-    etag: true,
-    lastModified: true,
-  })
-);
-app.use(methodOverride('_method'));
 
-// Sessão
-app.use(
-  session({
+
+// Middlewares
+app.use(speedLimiter); // Aplica slow down globalmente
+app.use(express.urlencoded({ extended: true })); // Para parsear dados de formulários HTML
+app.use(express.json()); // Para parsear JSON de requisições
+app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0, // Cache de 1 dia em produção
+    etag: true,
+    lastModified: true
+})); // Servir arquivos estáticos com cache
+app.use(methodOverride('_method')); // Para permitir DELETE e PUT de formulários
+
+// Configuração da Sessão (ESSENCIAL PARA req.flash)
+app.use(session({
     secret: process.env.SESSION_SECRET || 'seu_segredo_muito_secreto_para_sessao',
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      maxAge: parseInt(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24,
-      secure:
-        process.env.NODE_ENV === 'production'
-          ? process.env.SESSION_SECURE === 'true'
-          : false,
-      httpOnly: process.env.SESSION_HTTP_ONLY !== 'false',
-      sameSite:
-        process.env.SESSION_SAME_SITE ||
-        (process.env.NODE_ENV === 'production' ? 'strict' : 'lax'),
-    },
-  })
-);
+    cookie: { 
+        maxAge: parseInt(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24, // 1 dia por padrão
+        secure: process.env.NODE_ENV === 'production' ? 
+            (process.env.SESSION_SECURE === 'true') : false, // HTTPS em produção
+        httpOnly: process.env.SESSION_HTTP_ONLY !== 'false', // true por padrão
+        sameSite: process.env.SESSION_SAME_SITE || 
+            (process.env.NODE_ENV === 'production' ? 'strict' : 'lax')
+    }
+}));
 app.use(flash());
 
-// Autenticação via cookie JWT -> locals
+// Configuração do Connect-Flash (DEVE VIR DEPOIS DO express-session)
+app.use(flash());
+
 app.use(async (req, res, next) => {
-  res.locals.successMessage = req.flash('success');
-  res.locals.errorMessage = req.flash('error');
+    // 1. Mensagens Flash (já tínhamos isso)
+   res.locals.successMessage = req.flash('success');
+   res.locals.errorMessage = req.flash('error');
 
-  const token = req.cookies.token;
-  res.locals.isAuthenticated = false;
-  res.locals.user = null;
+    // 2. Lógica de autenticação para 'isAuthenticated' e 'user'
+    // Se você estiver usando JWT via cookies:
+    const token = req.cookies.token; // Assume que o token JWT está em um cookie chamado 'token'
+    res.locals.isAuthenticated = false;
+    res.locals.user = null; // Define user como nulo por padrão
 
-  if (token) {
-    try {
-      const jwt = require('jsonwebtoken');
-      const JWT_SECRET = process.env.JWT_SECRET;
-      const { User } = require('./models');
-      const decoded = jwt.verify(token, JWT_SECRET);
-      res.locals.isAuthenticated = true;
-      res.locals.user = await User.findByPk(decoded.id, {
-        attributes: ['id', 'username', 'role'],
-      });
-    } catch (error) {
-      console.warn('Token JWT inválido ou expirado:', error.message);
-      res.clearCookie('token');
-      res.locals.isAuthenticated = false;
-      res.locals.user = null;
+    if (token) {
+        try {
+            const jwt = require('jsonwebtoken');
+            const JWT_SECRET = process.env.JWT_SECRET
+            const {User} = require('./models');
+
+            const decoded = jwt.verify(token, JWT_SECRET);
+            res.locals.isAuthenticated = true;
+            res.locals.user = await User.findByPk(decoded.id, {attributes: ['id', 'username', 'role']});
+
+        } catch (error) {
+            // Token inválido ou expirado
+            console.warn('Token JWT inválido ou expirado:', error.message);
+            res.clearCookie('token'); // Limpa o cookie inválido
+            res.locals.isAuthenticated = false;
+            res.locals.user = null;
+        }
+    }else{
+        res.locals.isAuthenticated = false;
+        res.locals.user = null;
     }
-  }
 
-  next();
+    next();
 });
 
-// Flash locals novamente
+// Middleware para disponibilizar 'flash messages' e informações de usuário nas views
 app.use((req, res, next) => {
-  res.locals.successMessage = req.flash('success');
-  res.locals.errorMessage = req.flash('error');
-  next();
+    res.locals.successMessage = req.flash('success');
+    res.locals.errorMessage = req.flash('error');
+    //res.locals.user = req.user || null; // Se você tiver um middleware que popula req.user
+    next();
 });
 
-// Rotas
+
+// Importação e uso das rotas
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-const salesRoutes = require('./routes/salesRoutes');
+const salesRoutes = require('./routes/salesRoutes'); // Suas rotas de vendas
 const harvestRoutes = require('./routes/harvestRoutes');
 const lossRoutes = require('./routes/lossRoutes');
 const settlementRoutes = require('./routes/settlementRoutes');
-const healthRoutes = require('./routes/health');
+const healthRoutes = require('./routes/health'); // Health check routes
 const historyController = require('./controllers/historyController');
 const chartsController = require('./controllers/chartsController');
 
-// Health
+// Health check route (sem autenticação para monitoramento)
 app.use('/', healthRoutes);
 
 app.use('/auth', authRoutes);
@@ -280,178 +254,180 @@ app.use('/products', apiLimiter, productRoutes);
 app.use('/users', apiLimiter, userRoutes);
 app.use('/customers', apiLimiter, customerRoutes);
 app.use('/categories', apiLimiter, categoryRoutes);
-app.use('/sales', authMiddleware, apiLimiter, salesRoutes);
+app.use('/sales', authMiddleware, apiLimiter, salesRoutes); // Suas rotas de vendas
 app.use('/sales/reports', authMiddleware, authorizeRole(['admin', 'manager']));
 app.use('/', authMiddleware, authorizeRole(['admin', 'manager']), harvestRoutes);
 app.use('/losses', lossRoutes);
 app.use('/settlement', authMiddleware, settlementRoutes);
 
-// History/Charts
-app.get(
-  '/history',
-  authMiddleware,
-  authorizeRole(['admin', 'manager']),
-  historyController.getHistoryPage
-);
-app.get(
-  '/charts',
-  authMiddleware,
-  authorizeRole(['admin', 'manager']),
-  chartsController.getChartsPage
-);
-app.get(
-  '/charts/api/sales-data',
-  authMiddleware,
-  authorizeRole(['admin', 'manager']),
-  chartsController.getSalesChartData
-);
-app.get(
-  '/charts/api/top-products',
-  authMiddleware,
-  authorizeRole(['admin', 'manager']),
-  chartsController.getTopProductsData
-);
-app.get(
-  '/charts/api/harvests-data',
-  authMiddleware,
-  authorizeRole(['admin', 'manager']),
-  chartsController.getHarvestsChartData
-);
-app.get(
-  '/charts/api/losses-data',
-  authMiddleware,
-  authorizeRole(['admin', 'manager']),
-  chartsController.getLossesChartData
-);
+// Rotas para History e Charts
+app.get('/history', authMiddleware, authorizeRole(['admin', 'manager']), historyController.getHistoryPage);
+app.get('/charts', authMiddleware, authorizeRole(['admin', 'manager']), chartsController.getChartsPage);
+app.get('/charts/api/sales-data', authMiddleware, authorizeRole(['admin', 'manager']), chartsController.getSalesChartData);
+app.get('/charts/api/top-products', authMiddleware, authorizeRole(['admin', 'manager']), chartsController.getTopProductsData);
+app.get('/charts/api/harvests-data', authMiddleware, authorizeRole(['admin', 'manager']), chartsController.getHarvestsChartData);
+app.get('/charts/api/losses-data', authMiddleware, authorizeRole(['admin', 'manager']), chartsController.getLossesChartData);
 
-// Dashboard
-app.get(
-  '/dashboard',
-  authMiddleware,
-  authorizeRole(['admin', 'manager']),
-  async (req, res) => {
+// Rota para o dashboard/página inicial (requer autenticação)
+
+
+app.get('/dashboard', authMiddleware, authLimiter, async (req, res) => {
     try {
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date();
-      endOfDay.setHours(23, 59, 59, 999);
-
-      const [lastSale, salesToday, totalProducts, totalCustomers] = await Promise.all([
-        Sale.findOne({
-          order: [['sale_date', 'DESC']],
-          include: [
-            { model: Customer, as: 'customer' },
-            { model: User, as: 'user' },
-          ],
-        }),
-        Sale.count({
-          where: {
-            sale_date: {
-              [Op.between]: [startOfDay, endOfDay],
-            },
-          },
-        }),
-        SaleItem.sum('quantity', {
-          include: [
-            {
-              model: Sale,
-              as: 'sale',
-              attributes: [], // não selecionar colunas de Sale para evitar ONLY_FULL_GROUP_BY
-              where: {
-                sale_date: {
-                  [Op.between]: [startOfDay, endOfDay],
+        const { Sale, Harvest, Product, Customer, User, SaleItem } = require('./models');
+        const { Op } = require('sequelize');
+        const { sequelize: dbInstance } = require('./models');
+        
+        // Buscar a última venda
+        const lastSale = await Sale.findOne({
+            order: [['sale_date', 'DESC']],
+            include: [
+                {
+                    model: Customer,
+                    as: 'customer',
+                    attributes: ['name']
                 },
-              },
-              required: true,
-            },
-          ],
-          // garantir que nada além do aggregate seja selecionado
-          attributes: [],
-        }),
-        Customer.count(),
-      ]);
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['username']
+                }
+            ]
+        });
 
-      return res.render('dashboard', {
-        title: 'Dashboard',
-        isAuthenticated: res.locals.isAuthenticated,
-        user: res.locals.user,
-        successMessage: res.locals.successMessage,
-        errorMessage: res.locals.errorMessage,
-        lastSale: lastSale || null,
-        salesToday: salesToday || 0,
-        totalProducts: totalProducts || 0,
-        totalCustomers: totalCustomers || 0,
-      });
+        // Buscar a última colheita
+        const lastHarvest = await Harvest.findOne({
+            order: [['harvest_date', 'DESC']],
+            include: [
+                {
+                    model: Product,
+                    as: 'product',
+                    attributes: ['name']
+                },
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['username']
+                }
+            ]
+        });
+
+        // Calcular estatísticas
+        // Data de hoje (início e fim do dia) - usando fuso horário local brasileiro
+        const today = new Date();
+        
+        // Criar início e fim do dia no fuso horário brasileiro
+        const startOfDay = new Date(today);
+        startOfDay.setHours(0, 0, 0, 0);
+        
+        const endOfDay = new Date(today);
+        endOfDay.setHours(23, 59, 59, 999);
+        
+        // Converter para UTC para comparação com o banco (que armazena em UTC)
+        const startOfDayUTC = new Date(startOfDay.getTime() + (3 * 60 * 60 * 1000)); // +3 horas para UTC
+        const endOfDayUTC = new Date(endOfDay.getTime() + (3 * 60 * 60 * 1000)); // +3 horas para UTC
+        
+        console.log('Período de hoje (Brasil):', startOfDay.toLocaleString('pt-BR'), 'até', endOfDay.toLocaleString('pt-BR'));
+        console.log('Período de hoje (UTC):', startOfDayUTC.toISOString(), 'até', endOfDayUTC.toISOString());
+
+        // Contar vendas de hoje usando intervalo de tempo
+        const salesToday = await Sale.count({
+            where: {
+                sale_date: {
+                    [Op.gte]: startOfDayUTC,
+                    [Op.lte]: endOfDayUTC
+                }
+            }
+        });
+
+        // Contar produtos vendidos hoje usando intervalo de tempo
+        const totalProducts = await SaleItem.sum('quantity', {
+            include: [{
+                model: Sale,
+                as: 'sale',
+                where: {
+                    sale_date: {
+                        [Op.gte]: startOfDayUTC,
+                        [Op.lte]: endOfDayUTC
+                    }
+                },
+                attributes: [] // Não selecionar atributos da tabela Sale para evitar erro de GROUP BY
+            }]
+        }) || 0;
+
+        // Contar todos os clientes cadastrados no banco de dados
+        const totalCustomers = await Customer.count();
+
+        res.render('dashboard', {
+            title: 'Dashboard',
+            user: req.user,
+            lastSale: lastSale,
+            lastHarvest: lastHarvest,
+            salesToday: salesToday,
+            totalProducts: totalProducts,
+            totalCustomers: totalCustomers,
+            successMessage: res.locals.successMessage,
+            errorMessage: res.locals.errorMessage
+        });
     } catch (error) {
-      console.error('Erro ao carregar o dashboard:', error);
-      req.flash('error', 'Não foi possível carregar o dashboard.');
-      return res.redirect('/');
+        console.error('Erro ao buscar dados do dashboard:', error);
+        res.render('dashboard', {
+            title: 'Dashboard',
+            user: req.user,
+            lastSale: null,
+            lastHarvest: null,
+            salesToday: 0,
+            totalProducts: 0,
+            totalCustomers: 0,
+            successMessage: res.locals.successMessage,
+            errorMessage: res.locals.errorMessage
+        });
     }
-  }
-);
+});
 
-// Dashboard/login redirect
+// Rota padrão - redireciona para dashboard se autenticado, senão para login
 app.get('/', (req, res) => {
-  const token = req.cookies.token;
-  if (token) {
-    try {
-      const jwt = require('jsonwebtoken');
-      const JWT_SECRET = process.env.JWT_SECRET;
-      jwt.verify(token, JWT_SECRET);
-      return res.redirect('/dashboard');
-    } catch (error) {
-      res.clearCookie('token');
-      return res.redirect('/auth/login');
+    console.log('Rota / acessada');
+    
+    // Usa a mesma lógica de autenticação JWT do middleware global
+    const token = req.cookies.token;
+    console.log('Token exists:', !!token);
+    
+    if (token) {
+        try {
+            const jwt = require('jsonwebtoken');
+            const JWT_SECRET = process.env.JWT_SECRET;
+            const decoded = jwt.verify(token, JWT_SECRET);
+            console.log('Token válido, redirecionando para dashboard');
+            res.redirect('/dashboard');
+        } catch (error) {
+            console.log('Token inválido ou expirado, redirecionando para login');
+            res.clearCookie('token'); // Limpa o cookie inválido
+            res.redirect('/auth/login');
+        }
+    } else {
+        console.log('Nenhum token encontrado, redirecionando para login');
+        res.redirect('/auth/login');
     }
-  }
-  return res.redirect('/auth/login');
 });
 
-// 404
+// Tratamento de erros 404 (Rota não encontrada)
 app.use((req, res, next) => {
-  const acceptsJson = typeof req.headers.accept === 'string' ? req.headers.accept.includes('json') : false;
-  if (req.xhr || acceptsJson || (req.path && req.path.startsWith('/api/'))) {
-    return res.status(404).json({
-      success: false,
-      message: 'Página não encontrada.'
-    });
-  }
-  res.status(404).render('error', {
-    message: 'Página não encontrada.',
-    isAuthenticated: res.locals.isAuthenticated,
-    user: res.locals.user,
-    successMessage: res.locals.successMessage,
-    errorMessage: res.locals.errorMessage,
-  });
+    res.status(404).render('error', { message: 'Página não encontrada.' });
 });
 
-// Erros
+// Tratamento de erros globais
 app.use((err, req, res, next) => {
-  console.error(err);
-  const acceptsJson = typeof req.headers.accept === 'string' ? req.headers.accept.includes('json') : false;
-  if (req.xhr || acceptsJson || (req.path && req.path.startsWith('/api/'))) {
-    return res.status(500).json({
-      success: false,
-      message: err && err.message ? err.message : 'Ocorreu um erro no servidor.',
-      ...(process.env.NODE_ENV === 'production' ? {} : { error: { message: err.message, stack: err.stack } })
-    });
-  }
-  res.status(500).render('error', {
-    message: 'Ocorreu um erro no servidor.',
-    error: process.env.NODE_ENV === 'production' ? {} : err,
-    isAuthenticated: res.locals.isAuthenticated,
-    user: res.locals.user,
-    successMessage: res.locals.successMessage,
-    errorMessage: res.locals.errorMessage,
-  });
+    console.error(err.stack);
+    res.status(500).render('error', { message: 'Ocorreu um erro no servidor.', error: err });
 });
 
-// Server
+// Iniciar o servidor (apenas quando rodando localmente)
 const PORT = process.env.PORT || 3001;
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-  });
+    app.listen(PORT, () => {
+        console.log(`Servidor rodando na porta ${PORT}`);
+    });
 }
 
+// Exportar o app para ser utilizado por plataformas serverless (como Vercel)
 module.exports = app;

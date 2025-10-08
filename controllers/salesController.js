@@ -111,26 +111,27 @@ exports.getPdvPage = async (req, res) => {
 
 // Finalizar uma venda (API endpoint)
 exports.finalizeSale = async (req, res) => {
+    const transaction = await sequelize.transaction(); // Inicia uma transação
+
     const { customer_id, items } = req.body;
     const user_id = req.user.id;
 
-    // Validação antes de iniciar transação
     if (!items || items.length === 0) {
+        await transaction.rollback(); // Rollback antes de sair
+        
         // Verifica se é uma requisição AJAX
-        if (req.xhr || (typeof req.headers.accept === 'string' && req.headers.accept.includes('json'))) {
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
             return res.status(400).json({
                 success: false,
                 message: 'Nenhum item na venda. Adicione produtos para finalizar.'
             });
         }
-
+        
         req.flash('error', 'Nenhum item na venda. Adicione produtos para finalizar.');
-        return res.redirect('/sales/pdv');
+        return res.redirect('/sales/pdv'); // Redireciona de volta para o PDV
     }
 
-    let transaction;
     try {
-        transaction = await sequelize.transaction(); // Inicia uma transação
         let total_amount = 0;
         const saleItemsForCreation = [];
 
@@ -141,7 +142,7 @@ exports.finalizeSale = async (req, res) => {
                 await transaction.rollback();
                 
                 // Verifica se é uma requisição AJAX
-                if (req.xhr || (typeof req.headers.accept === 'string' && req.headers.accept.includes('json'))) {
+                if (req.xhr || req.headers.accept.indexOf('json') > -1) {
                     return res.status(400).json({
                         success: false,
                         message: `Produto com ID ${item.product_id} não encontrado.`
@@ -156,7 +157,7 @@ exports.finalizeSale = async (req, res) => {
                 await transaction.rollback();
                 
                 // Verifica se é uma requisição AJAX
-                if (req.xhr || (typeof req.headers.accept === 'string' && req.headers.accept.includes('json'))) {
+                if (req.xhr || req.headers.accept.indexOf('json') > -1) {
                     return res.status(400).json({
                         success: false,
                         message: `Estoque insuficiente para o produto: ${product.name}. Disponível: ${product.stock_quantity}, Solicitado: ${item.quantity}.`
@@ -185,7 +186,8 @@ exports.finalizeSale = async (req, res) => {
         const newSale = await Sale.create({
             customer_id: customer_id || null,
             user_id: user_id,
-            total_amount: total_amount
+            total_amount: total_amount,
+            status: 'finalizada'
         }, { transaction });
 
         saleItemsForCreation.forEach(item => {
@@ -212,7 +214,7 @@ exports.finalizeSale = async (req, res) => {
         console.error('Erro ao finalizar venda:', error);
         
         // Verifica se é uma requisição AJAX
-        if (req.xhr || (typeof req.headers.accept === 'string' && req.headers.accept.includes('json'))) {
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
             return res.status(500).json({
                 success: false,
                 message: 'Erro interno do servidor ao finalizar venda: ' + error.message

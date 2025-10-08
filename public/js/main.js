@@ -239,8 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
                 },
                 credentials: 'include', // Inclui cookies de sessão
                 body: JSON.stringify(saleData)

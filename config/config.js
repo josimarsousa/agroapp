@@ -1,14 +1,5 @@
 const fs = require('fs');
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-
-// Suporte a variáveis DB_* e MYSQL* (Railway)
-const DB_NAME = process.env.DB_NAME || process.env.MYSQLDATABASE || process.env.MYSQL_DB;
-const DB_USER = process.env.DB_USER || process.env.MYSQLUSER || process.env.MYSQL_USER;
-const DB_PASSWORD = process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD;
-const DB_HOST = process.env.DB_HOST || process.env.MYSQLHOST || process.env.MYSQL_HOST;
-const DB_PORT = process.env.DB_PORT || process.env.MYSQLPORT || process.env.MYSQL_PORT;
+require('dotenv').config();
 
 module.exports = {
   development: {
@@ -28,11 +19,11 @@ module.exports = {
     dialect: 'mysql'
   },
   production: {
-    username: DB_USER,
-    password: DB_PASSWORD,
-    database: DB_NAME,
-    host: DB_HOST,
-    port: DB_PORT ? parseInt(DB_PORT, 10) : 3306,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
     dialect: 'mysql',
     logging: false,
     pool: {

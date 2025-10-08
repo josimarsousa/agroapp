@@ -4,9 +4,7 @@ const { User } = require('../models');
 const bcrypt = require('bcryptjs'); // Para comparar senhas
 const jwt = require('jsonwebtoken'); // Se você estiver usando JWT para autenticação
 const { Op } = require('sequelize'); // Importe se precisar de operadores Sequelize para busca
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+require('dotenv').config();
 // Segredo do JWT - DEVE SER UMA VARIÁVEL DE AMBIENTE EM PRODUÇÃO!
 const JWT_SECRET = process.env.JWT_SECRET
 

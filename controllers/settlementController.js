@@ -1,8 +1,8 @@
 // controllers/settlementController.js
 const { Sale, SaleItem, Loss, Product, Category, User, Customer } = require('../models');
 const { Op, Sequelize } = require('sequelize');
-const PDFDocument = require('pdfkit');
-const fs = require('fs');
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
 
 // Exibir filtros
 exports.settlementView = async (req, res) => {
@@ -325,274 +325,116 @@ exports.exportSettlementPDF = async (req, res) => {
             profitMargin: salesData.totalAmount > 0 ? ((salesData.totalAmount - lossesData.totalValue) / salesData.totalAmount) * 100 : 0
         };
         
-        // === Geração de PDF com PDFKit (padrão dos demais relatórios) ===
-        const doc = new PDFDocument({ 
-            size: 'A4',
-            margin: 40,
-            info: {
-                Title: 'Relatório de Acerto',
-                Author: 'agroApp',
-                Subject: 'Relatório de Acerto',
-                Keywords: 'acerto, relatório, agroapp'
+        // Gerar HTML para o PDF
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Relatório de Acerto - ${start_date} a ${end_date}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header { text-align: center; margin-bottom: 30px; }
+                .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px; }
+                .summary-item { padding: 15px; border: 1px solid #ddd; border-radius: 5px; text-align: center; }
+                .summary-item.positive { background-color: #d4edda; border-color: #c3e6cb; }
+                .summary-item.negative { background-color: #f8d7da; border-color: #f5c6cb; }
+                .summary-item h3 { margin: 0 0 10px 0; font-size: 14px; color: #666; }
+                .summary-item .value { font-size: 24px; font-weight: bold; margin: 0; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+                th { background-color: #f8f9fa; font-weight: bold; }
+                .section-title { font-size: 18px; font-weight: bold; margin: 30px 0 15px 0; }
+                .period { text-align: center; color: #666; margin-bottom: 20px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Relatório de Acerto de Contas</h1>
+                <div class="period">Período: ${new Date(start_date).toLocaleDateString('pt-BR')} a ${new Date(end_date).toLocaleDateString('pt-BR')}</div>
+            </div>
+            
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <h3>Total de Vendas</h3>
+                    <p class="value">R$ ${summary.totalSales.toFixed(2).replace('.', ',')}</p>
+                </div>
+                <div class="summary-item">
+                    <h3>Total de Perdas</h3>
+                    <p class="value">R$ ${summary.totalLosses.toFixed(2).replace('.', ',')}</p>
+                </div>
+                <div class="summary-item ${summary.netResult >= 0 ? 'positive' : 'negative'}">
+                    <h3>Resultado Líquido</h3>
+                    <p class="value">R$ ${summary.netResult.toFixed(2).replace('.', ',')}</p>
+                </div>
+                <div class="summary-item ${summary.profitMargin >= 0 ? 'positive' : 'negative'}">
+                    <h3>Margem de Lucro</h3>
+                    <p class="value">${summary.profitMargin.toFixed(1).replace('.', ',')}%</p>
+                </div>
+            </div>
+            
+            <div class="section-title">Resumo Total por Produto</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Qtd. Vendida</th>
+                        <th>Valor Vendas</th>
+                        <th>Qtd. Perdida</th>
+                        <th>Valor Perdas</th>
+                        <th>Resultado Líquido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${Object.keys(productSummary).map(productName => {
+                        const product = productSummary[productName];
+                        const netResult = product.salesAmount - product.lossValue;
+                        return `
+                        <tr>
+                            <td>${productName}</td>
+                            <td>${product.salesQuantity.toFixed(2).replace('.', ',')}</td>
+                            <td>R$ ${product.salesAmount.toFixed(2).replace('.', ',')}</td>
+                            <td>${product.lossQuantity.toFixed(2).replace('.', ',')}</td>
+                            <td>R$ ${product.lossValue.toFixed(2).replace('.', ',')}</td>
+                            <td style="color: ${netResult >= 0 ? 'green' : 'red'}; font-weight: bold;">
+                                R$ ${netResult.toFixed(2).replace('.', ',')}
+                            </td>
+                        </tr>`;
+                    }).join('')}
+                </tbody>
+            </table>
+        </body>
+        </html>
+        `;
+        
+        // Gerar PDF com Puppeteer (compatível com Vercel)
+        const browser = await puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath(),
+            headless: chromium.headless,
+        });
+        const page = await browser.newPage();
+        await page.setContent(htmlContent);
+        
+        const pdfBuffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: {
+                top: '20px',
+                right: '20px',
+                bottom: '20px',
+                left: '20px'
             }
         });
+        
+        await browser.close();
+        
+        // Enviar PDF como resposta
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="relatorio_acerto_${Date.now()}.pdf"`);
-        doc.pipe(res);
-
-        const startDateFormatted = new Date(start_date + 'T00:00:00').toLocaleDateString('pt-BR');
-        const endDateFormatted = new Date(end_date + 'T00:00:00').toLocaleDateString('pt-BR');
-        const periodText = `Período: ${startDateFormatted} até ${endDateFormatted}`;
-
-        // === Cabeçalho no padrão do comprovante de venda ===
-        const pageWidth = doc.page.width;
-        const margin = doc.page.margins.left;
-        const contentWidth = pageWidth - (doc.page.margins.left + doc.page.margins.right);
-        let currentY = doc.page.margins.top;
-
-        // Logo/Ícone da empresa (círculo com iniciais)
-        doc.circle(margin + 25, currentY + 25, 20)
-           .fillAndStroke('#4a7c59', '#2c5530')
-           .fontSize(14)
-           .font('Helvetica-Bold')
-           .fillColor('#ffffff')
-           .text('AG', margin + 18, currentY + 18);
-
-        // Nome da empresa e informações
-        doc.fillColor('#000000')
-           .fontSize(18)
-           .font('Helvetica-Bold')
-           .text('AGROAPP', margin + 60, currentY + 5);
-
-        doc.fontSize(10)
-           .font('Helvetica')
-           .fillColor('#666666')
-           .text('Sistema de Gestão Agrícola', margin + 60, currentY + 25)
-           .text('contato@agroapp.com | (37) 99961-3950', margin + 60, currentY + 40);
-
-        currentY += 80;
-
-        // Linha separadora
-        doc.moveTo(margin, currentY)
-           .lineTo(margin + contentWidth, currentY)
-           .stroke('#000000');
-
-        currentY += 15;
-
-        // Título do documento (compacto)
-        doc.fontSize(14)
-           .font('Helvetica-Bold')
-           .fillColor('#000000')
-           .text('RELATÓRIO DE ACERTO', margin, currentY, { align: 'center' });
-
-        // Período abaixo do título
-        doc.fontSize(9)
-           .font('Helvetica')
-           .fillColor('#333333')
-           .text(periodText, margin, currentY + 18, { align: 'center' });
-
-        // Posicionar cursor abaixo do cabeçalho
-        const afterHeaderY = currentY + 45;
-        doc.y = afterHeaderY;
-        doc.moveDown();
-
-        // === Caixa de resumo (padrão similar ao comprovante de venda) ===
-        const summaryBoxTop = doc.y;
-        doc.rect(margin, summaryBoxTop, contentWidth, 60)
-           .stroke('#cccccc')
-           .lineWidth(1);
-        const leftColX = margin + 15;
-        const rightColX = margin + (contentWidth / 2) + 10;
-
-        doc.fontSize(10)
-           .font('Helvetica-Bold')
-           .text('Totais do Período', leftColX, summaryBoxTop + 10);
-
-        doc.fontSize(8)
-           .font('Helvetica')
-           .text(`Vendas: R$ ${summary.totalSales.toFixed(2).replace('.', ',')}`, leftColX, summaryBoxTop + 25)
-           .text(`Perdas: R$ ${summary.totalLosses.toFixed(2).replace('.', ',')}`, leftColX, summaryBoxTop + 38);
-
-        doc.fontSize(10)
-           .font('Helvetica-Bold')
-           .text('Resultado', rightColX, summaryBoxTop + 10);
-
-        doc.fontSize(8)
-           .font('Helvetica')
-           .text(`Líquido: R$ ${summary.netResult.toFixed(2).replace('.', ',')}`, rightColX, summaryBoxTop + 25)
-           .text(`Margem: ${summary.profitMargin.toFixed(2).replace('.', ',')}%`, rightColX, summaryBoxTop + 38);
-
-        doc.y = summaryBoxTop + 75;
-
-        // Tabela com padrão visual consistente
-        const table = { headers: [], rows: [] };
-
-        table.headers = ['Produto', 'Qtd. Vendida', 'Valor Vendas', 'Qtd. Perdida', 'Valor Perdas', 'Resultado Líquido'];
-
-        const productNames = Object.keys(productSummary);
-        if (productNames.length === 0) {
-            table.rows.push(['Nenhum dado encontrado para o período.', '', '', '', '', '']);
-        } else {
-            productNames.forEach(productName => {
-                const p = productSummary[productName];
-                const net = p.salesAmount - p.lossValue;
-                table.rows.push([
-                    productName,
-                    (p.salesQuantity || 0).toFixed(2).replace('.', ','),
-                    `R$ ${(p.salesAmount || 0).toFixed(2).replace('.', ',')}`,
-                    (p.lossQuantity || 0).toFixed(2).replace('.', ','),
-                    `R$ ${(p.lossValue || 0).toFixed(2).replace('.', ',')}`,
-                    `R$ ${net.toFixed(2).replace('.', ',')}`
-                ]);
-            });
-        }
-
-        let y = doc.y;
-        const startX = doc.page.margins.left;
-        const tableWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
-        if (isNaN(tableWidth) || tableWidth <= 0) {
-            throw new Error('Erro crítico: Largura da tabela inválida calculada: ' + tableWidth);
-        }
-
-        // Larguras proporcionais das colunas (6 colunas)
-        const colWidths = [
-            tableWidth * 0.18, // Produto (ajustado conforme solicitação)
-            tableWidth * 0.12, // Qtd. Vendida
-            tableWidth * 0.19, // Valor Vendas (aumentado para manter total 100%)
-            tableWidth * 0.12, // Qtd. Perdida
-            tableWidth * 0.19, // Valor Perdas (aumentado para manter total 100%)
-            tableWidth * 0.20  // Resultado Líquido (ajustado conforme solicitação)
-        ];
-        if (colWidths.some(isNaN) || colWidths.some(w => w <= 0)) {
-            throw new Error('Erro crítico: Uma das larguras de coluna é NaN ou menor/igual a zero.');
-        }
-
-        // Cabeçalho da tabela com fundo (padrão venda) com quebra controlada em "Resultado Líquido"
-        const headerY = y;
+        res.setHeader('Content-Disposition', `attachment; filename="relatorio-acerto-${start_date}-${end_date}.pdf"`);
+        res.send(pdfBuffer);
         
-        // Calcular altura dinâmica do cabeçalho considerando possível quebra 
-        doc.fillColor('#000000').fontSize(9).font('Helvetica-Bold');
-        let headerHeight = 0;
-        let currentX = startX;
-        table.headers.forEach((header, i) => {
-            const width = colWidths[i] - 5;
-            const headerText = i === 5 ? 'Resultado\nLíquido' : header;
-            const hRaw = doc.heightOfString(headerText, { width });
-            const h = (typeof hRaw === 'number' && !isNaN(hRaw) && hRaw > 0) ? hRaw : doc.currentLineHeight();
-            headerHeight = Math.max(headerHeight, h);
-        });
-
-        // Fundo do cabeçalho com altura dinâmica
-        doc.save();
-        doc.rect(doc.page.margins.left, headerY - 3, tableWidth, headerHeight + 6)
-           .fillAndStroke('#f8f9fa', '#dee2e6');
-        doc.restore();
-        doc.fillColor('#000000');
-
-        // Desenhar textos do cabeçalho com quebra controlada no último título (centralizado)
-        currentX = startX;
-        table.headers.forEach((header, i) => {
-            const width = colWidths[i] - 5;
-            const headerText = i === 5 ? 'Resultado\nLíquido' : header;
-            doc.text(headerText, currentX + 5, headerY + 3, { width, align: 'center' });
-            currentX += colWidths[i];
-        });
-        
-        y = headerY + headerHeight + 8;
-        doc.y = y;
-
-        // Corpo da tabela
-        const tableBodyFontSize = 8;
-        doc.fontSize(tableBodyFontSize).font('Helvetica');
-
-        table.rows.forEach((row, rowIndex) => {
-            let rowHeight = 0;
-
-            // Calcula a altura necessária para a linha
-            row.forEach((cellText, colIndex) => {
-                const width = colWidths[colIndex];
-                const text = String(cellText);
-                let textHeight = doc.heightOfString(text, { width: width - 10 });
-                if (typeof textHeight !== 'number' || isNaN(textHeight) || textHeight < 0) {
-                    textHeight = tableBodyFontSize * 1.2;
-                }
-                rowHeight = Math.max(rowHeight, textHeight);
-            });
-            if (typeof rowHeight !== 'number' || isNaN(rowHeight) || rowHeight <= 0) {
-                rowHeight = tableBodyFontSize * 1.5;
-            }
-
-            // Quebra de página se necessário
-            if (y + rowHeight + 10 > doc.page.height - doc.page.margins.bottom) {
-                doc.addPage();
-                y = doc.y;
-
-                // Redesenhar cabeçalho com fundo (padrão venda) com quebra controlada em "Resultado Líquido"
-                const headerY2 = y;
-
-                // Calcular altura dinâmica do cabeçalho considerando possível quebra 
-                doc.fillColor('#000000').fontSize(9).font('Helvetica-Bold');
-                let headerHeight2 = 0;
-                currentX = startX;
-                table.headers.forEach((header, i) => {
-                    const width = colWidths[i] - 5;
-                    const headerText = i === 5 ? 'Resultado\nLíquido' : header;
-                    const hRaw = doc.heightOfString(headerText, { width });
-                    const h = (typeof hRaw === 'number' && !isNaN(hRaw) && hRaw > 0) ? hRaw : doc.currentLineHeight();
-                    headerHeight2 = Math.max(headerHeight2, h);
-                });
-
-                // Fundo do cabeçalho com altura dinâmica
-                doc.save();
-                doc.rect(doc.page.margins.left, headerY2 - 3, tableWidth, headerHeight2 + 6)
-                   .fillAndStroke('#f8f9fa', '#dee2e6');
-                doc.restore();
-                doc.fillColor('#000000');
-
-                // Desenhar textos do cabeçalho com quebra controlada no último título (centralizado)
-                currentX = startX;
-                table.headers.forEach((header, i) => {
-                    const width = colWidths[i] - 5;
-                    const headerText = i === 5 ? 'Resultado\nLíquido' : header;
-                    doc.text(headerText, currentX + 5, headerY2 + 3, { width, align: 'center' });
-                    currentX += colWidths[i];
-                });
-                y = headerY2 + headerHeight2 + 8;
-                doc.y = y;
-                doc.fontSize(tableBodyFontSize).font('Helvetica');
-            }
-
-            // Linhas alternadas com fundo (padrão venda)
-            if (rowIndex % 2 === 0) {
-                doc.rect(doc.page.margins.left, y - 3, tableWidth, rowHeight + 6)
-                   .fill('#f8f9fa')
-                   .stroke();
-                doc.fillColor('#000000');
-            }
-
-            // Desenha a linha
-            currentX = startX;
-            row.forEach((cellText, i) => {
-                const width = colWidths[i];
-                const text = String(cellText);
-                const align = 'center'; // todos ao centro para melhor visualização
-                doc.text(text, currentX + 5, y, { width: width - 10, align });
-                currentX += width;
-            });
-
-            // Avança verticalmente com base na altura calculada da linha
-            y += rowHeight + 6;
-            doc.y = y;
-
-            // Linha separadora entre linhas
-            doc.lineWidth(0.2);
-            doc.strokeColor('#eeeeee');
-            doc.moveTo(doc.page.margins.left, y).lineTo(doc.page.width - doc.page.margins.right, y).stroke();
-            y += 4;
-            doc.y = y;
-        });
-
-        doc.end();
     } catch (error) {
         console.error('Erro ao gerar PDF:', error);
         res.status(500).json({ error: 'Erro ao gerar PDF' });
