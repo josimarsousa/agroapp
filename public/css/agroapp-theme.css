@@ -1293,6 +1293,68 @@ input[type="radio"]:hover {
 
 /* ===== RESPONSIVIDADE APRIMORADA PARA SMARTPHONES ===== */
 
+/* Gestão: ajustes de tabelas para smartphones (Users, Customers, Products, Categories) */
+@media (max-width: 768px) {
+    /* Centralizar botão de adicionar abaixo do título: Users, Categories, Products e Customers */
+    .users-page .page-header,
+    .categories-page .page-header,
+    .products-page .page-header,
+    .customers-page .page-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: var(--spacing-sm);
+    }
+
+    .users-page .page-actions,
+    .categories-page .page-actions,
+    .products-page .page-actions,
+    .customers-page .page-actions {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .users-page .page-actions .btn,
+    .categories-page .page-actions .btn,
+    .products-page .page-actions .btn,
+    .customers-page .page-actions .btn {
+        width: auto !important; /* Evita 100% no mobile */
+    }
+
+    /* Remover sticky da coluna de ações e do último cabeçalho para melhor rolagem horizontal */
+    .management-body .table thead th.actions,
+    .management-body .table thead th:last-child {
+        position: static;
+        right: auto;
+        background: transparent;
+        backdrop-filter: none;
+        z-index: auto;
+    }
+
+    .management-body .table td.actions {
+        position: static;
+        right: auto;
+        background: transparent;
+        border-left: none;
+        z-index: auto;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    /* Larguras padrão em mobile para melhor leitura */
+    .management-body .table thead th:first-child,
+    .management-body .table tbody td:first-child {
+        width: 56px !important; /* ID compacto */
+        text-align: center;
+    }
+
+    .management-body .table thead th:last-child,
+    .management-body .table tbody td.actions {
+        width: 180px !important; /* Ações consistente */
+    }
+}
+
 /* Smartphones - 480px e abaixo */
 @media (max-width: 480px) {
     /* Layout geral */
@@ -1376,15 +1438,54 @@ input[type="radio"]:hover {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     .table {
         font-size: 0.8rem;
-        min-width: 600px; /* Força scroll horizontal */
+        min-width: 600px; /* padrão global */
+    }
+    /* Gestão pode ser um pouco mais compacta */
+    .management-body .table {
+        min-width: 580px; /* Força scroll horizontal e evita quebra excessiva */
+    }
+
+    /* Refinar centralização em telas menores */
+    .users-page .page-header,
+    .categories-page .page-header,
+    .products-page .page-header,
+    .customers-page .page-header {
+        gap: var(--spacing-xs);
+    }
+    .users-page .page-actions .btn,
+    .categories-page .page-actions .btn,
+    .products-page .page-actions .btn,
+    .customers-page .page-actions .btn {
+        min-width: 200px;
     }
     
     .table th,
     .table td {
         padding: var(--spacing-xs) var(--spacing-sm);
+        white-space: nowrap;
+    }
+
+    /* ID mais compacto e ações à esquerda em telas muito pequenas */
+    .management-body .table thead th:first-child,
+    .management-body .table tbody td:first-child {
+        width: 50px !important;
+        text-align: center;
+    }
+
+    .management-body .table thead th:last-child,
+    .management-body .table thead th.actions,
+    .management-body .table tbody td.actions {
+        width: 160px !important;
+        position: static;
+        right: auto;
+        background: transparent;
+        backdrop-filter: none;
+        border-left: none;
+        z-index: auto;
+        text-align: left;
         white-space: nowrap;
     }
     
