@@ -20,6 +20,11 @@
                 <span></span>
             </span>
         </button>
+        <% if (isAuthenticated) { %>
+            <form action="/auth/logout" method="POST" class="logout-form logout-mobile">
+                <button type="submit" class="logout-btn">Sair</button>
+            </form>
+        <% } %>
 
         <!-- Navigation -->
         <nav class="main-nav" id="main-nav">
