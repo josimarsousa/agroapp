@@ -1167,10 +1167,40 @@ input[type="radio"]:hover {
 @media (max-width: 768px) {
     .auth-body {
         padding: var(--spacing-sm);
+        flex-direction: column; /* Empilha conteúdo: container + footer */
     }
     
     .auth-container {
-        max-width: 100%;
+        max-width: 360px; /* Reduz largura em tablets e smartphones (ajuste fino) */
+        margin-top: auto; /* Centraliza verticalmente */
+        margin-bottom: auto; /* Centraliza verticalmente */
+    }
+
+    /* Ajustes de compacidade do card e controles em mobile (<=768px) */
+    .auth-card {
+        padding: var(--spacing-md);
+    }
+
+    .auth-form .form-group {
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .auth-form .input-group {
+        gap: var(--spacing-xs);
+    }
+
+    .auth-form .form-control,
+    .auth-form .form-control-enhanced {
+        padding: 10px 12px;
+        font-size: 16px; /* Mantém 16px para evitar zoom no iOS */
+        line-height: 1.3;
+    }
+
+    .auth-form .btn,
+    .auth-form .btn-primary {
+        padding: 10px 12px;
+        font-size: var(--font-size-sm);
+        border-radius: var(--border-radius-sm);
     }
     
     .auth-header {
@@ -1204,11 +1234,46 @@ input[type="radio"]:hover {
         padding: var(--spacing-md);
         font-size: var(--font-size-base);
     }
+    
+    /* Footer não desloca o centro do formulário em mobile */
+    .auth-body footer {
+        margin-top: auto; /* Empurra o footer para o rodapé */
+        align-self: stretch;
+        text-align: center;
+    }
 }
 
 @media (max-width: 480px) {
     .auth-body {
         padding: var(--spacing-xs);
+    }
+    
+    .auth-container {
+        max-width: 300px; /* Reduz ainda mais em smartphones (ajuste fino) */
+    }
+
+    /* Controles mais compactos em smartphones (<=480px) */
+    .auth-form .form-control,
+    .auth-form .form-control-enhanced {
+        padding: 8px 12px;
+        font-size: 16px; /* Evita zoom */
+        line-height: 1.3;
+    }
+
+    .auth-form .btn,
+    .auth-form .btn-primary {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .auth-form .form-label {
+        font-size: var(--font-size-xs);
+    }
+
+    .input-group .input-icon svg {
+        width: 18px;
+        height: 18px;
     }
     
     .auth-header {
@@ -1257,6 +1322,29 @@ input[type="radio"]:hover {
 }
 
 @media (max-width: 360px) {
+    .auth-container {
+        max-width: 280px; /* Ajuste para telas muito pequenas (ajuste fino) */
+    }
+
+    /* Ultra-compacto para telas muito pequenas (<=360px) */
+    .auth-form .form-control,
+    .auth-form .form-control-enhanced {
+        padding: 8px 10px;
+        font-size: 16px;
+        line-height: 1.25;
+    }
+
+    .auth-form .btn,
+    .auth-form .btn-primary {
+        padding: 9px 12px;
+        font-size: 0.9rem;
+    }
+
+    .input-group .input-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+    
     .auth-header h1 {
         font-size: var(--font-size-lg);
     }
