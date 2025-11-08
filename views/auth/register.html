@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar - agroApp</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/navbar-modern.css">
+  <link rel="stylesheet" href="/css/menu-override.css">
+  <link rel="stylesheet" href="/css/agroapp-theme.css">
+</head>
+<body class="auth-body">
+  <div class="auth-container">
+    <div class="auth-card card fade-in">
+      <div class="auth-header card-header">
+        <div class="auth-header-content">
+          <div class="auth-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="auth-header-text">
+            <h1 class="text-primary">agroApp</h1>
+            <p class="auth-subtitle">Crie sua conta</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-content card-body">
+        <div id="register-messages"></div>
+        <form id="register-form" class="auth-form" action="/auth/register" method="POST" autocomplete="on">
+          <div class="form-group mb-3">
+            <label for="username" class="form-label">Usuário</label>
+            <input type="text" id="username" name="username" class="form-control form-control-enhanced" required />
+          </div>
+          <div class="form-group mb-3">
+            <label for="password" class="form-label">Senha</label>
+            <input type="password" id="password" name="password" class="form-control form-control-enhanced" required />
+          </div>
+          <div class="form-group mb-4">
+            <label for="role" class="form-label">Perfil</label>
+            <select id="role" name="role" class="form-control form-control-enhanced" required>
+              <option value="user">Usuário</option>
+              <option value="manager">Gerente</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Registrar</button>
+        </form>
+        <div class="auth-footer text-center mt-3">
+          <p>Já possui conta? <a href="/auth/login" class="text-primary">Entrar</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/ui/auth/register.js" defer></script>
+</body>
+</html>
